@@ -1,0 +1,3 @@
+add_executable(clgl_color_mapping_creator color_mapping_creator.cpp)
+
+target_link_libraries(clgl_color_mapping_creator PUBLIC ${PROJECT_NAME})
