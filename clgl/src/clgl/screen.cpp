@@ -21,11 +21,11 @@ void clgl::Screen::fill(const Pixel &pixel) {
         current_end   += range_size;
     }
 
-    for (U32 i = 0u; i < threads_running; ++i) {
+    filling_threads[threads_running] = std::thread(&Screen::fill_screen_portion, this, current_start, m_screen_buffer.get_pixel_count(), pixel);
+
+    for (U32 i = 0u; i < _SCREEN_FILLING_THREADS_COUNT; ++i) {
         filling_threads[i].join();
     }
-
-    fill_screen_portion(current_start, m_screen_buffer.get_pixel_count(), pixel);
 }
 
 void clgl::Screen::draw(Drawable &drawable) {
