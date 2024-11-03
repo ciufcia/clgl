@@ -17,4 +17,5 @@
 #include "drawers/drawers.hpp"
 #include "shading_palettes.hpp"
 #include "exceptions.hpp"
+#include "texture.hpp"
 #include "utils/utils.hpp"

@@ -5,26 +5,9 @@
 #include "clgl/drawers/drawers.hpp"
 
 void clgl::Screen::fill(const Pixel &pixel) {
-    const U32 range_size = m_screen_buffer.get_pixel_count() / _SCREEN_FILLING_THREADS_COUNT;
-
-    constexpr U32 threads_running = _SCREEN_FILLING_THREADS_COUNT - 1u;
-
-    U32 current_start = 0u;
-    U32 current_end   = range_size;
-
-    std::thread filling_threads[_SCREEN_FILLING_THREADS_COUNT];
-
-    for (U32 i = 0u; i < threads_running; ++i) {
-        filling_threads[i] = std::thread(&Screen::fill_screen_portion, this, current_start, current_end, pixel);
-
-        current_start = current_end;
-        current_end   += range_size;
-    }
-
-    filling_threads[threads_running] = std::thread(&Screen::fill_screen_portion, this, current_start, m_screen_buffer.get_pixel_count(), pixel);
-
-    for (U32 i = 0u; i < _SCREEN_FILLING_THREADS_COUNT; ++i) {
-        filling_threads[i].join();
+    #pragma omp parallel for
+    for (I32 p = 0u; p < m_screen_buffer.get_pixel_count(); ++p) {
+        m_screen_buffer.set_pixel(p, pixel);
     }
 }
 
@@ -351,10 +334,4 @@ void clgl::Screen::restore_old_color_palette() {
         m_handles.output_handle,
         &console_buffer_info
     )) throw exceptions::winapi::CantSet();
-}
-
-void clgl::Screen::fill_screen_portion(U32 range_start, U32 range_end, const Pixel &pixel) {
-    for (U32 p = range_start; p < range_end; ++p) {
-        m_screen_buffer.set_pixel(p, pixel);
-    }
 }

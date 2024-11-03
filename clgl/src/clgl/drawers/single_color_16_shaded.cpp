@@ -4,7 +4,8 @@
 void clgl::drawers::SingleColor16Shaded::run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer, const ColorMappings &color_mappings) {
     U8 console_color = color_mappings.get_color_mapping(color).color_code;
 
-    for (U32 i = 0u; i < screen_buffer.get_pixel_count(); ++i) {
+    #pragma omp parallel for
+    for (I32 i = 0u; i < screen_buffer.get_pixel_count(); ++i) {
         const Pixel &pixel = screen_buffer.get_pixel(i);
 
         CHAR_INFO &char_info = screen_writer.p_char_info_buffer[i];

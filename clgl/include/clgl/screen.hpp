@@ -88,8 +88,6 @@ private:
     void save_old_color_palette();
     void restore_old_color_palette();
 
-    void fill_screen_portion(U32 range_start, U32 range_end, const Pixel &pixel);
-
 private:
 
     winapi::Handles                      m_handles;
@@ -123,8 +121,6 @@ private:
 
 friend class App;
 };
-
-constexpr U8 _SCREEN_FILLING_THREADS_COUNT = 1u;
 
 template<typename DrawerType, typename ... Params> requires std::derived_from<DrawerType, Drawer>
 DrawerInfo<DrawerType> Screen::register_drawer(Params&... params) {

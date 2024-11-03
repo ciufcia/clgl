@@ -1,7 +1,8 @@
 #include "clgl/drawers/colors_16.hpp"
 
 void clgl::drawers::Colors16::run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer, const ColorMappings &color_mappings) {
-    for (U32 i = 0u; i < screen_buffer.get_pixel_count(); ++i) {
+    #pragma omp parallel for
+    for (I32 i = 0u; i < screen_buffer.get_pixel_count(); ++i) {
         const Pixel &pixel = screen_buffer.get_pixel(i);
 
         CHAR_INFO &char_info = screen_writer.p_char_info_buffer[i];

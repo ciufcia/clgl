@@ -37,7 +37,7 @@ void clgl::Line::draw(ScreenBuffer &screen_buffer, Vec2F start, Vec2F end) {
 
     F32 dx    = end.x - start.x;
     F32 dy    = end.y - start.y;
-    F32 slope = (dx != 0.f) ? dy / dx : slope = screen_buffer.get_max_float_coordinate_offset();
+    F32 slope = (dx != 0.f) ? dy / dx : screen_buffer.get_max_float_coordinate_offset();
     F32 b     = start.y - start.x * slope;
 
     F32 cy;

@@ -42,12 +42,12 @@ U8 get_brightness_value(Color color) {
     return (static_cast<U8>(luminance));
 }
 
-#include <iostream>
 void create_clcm() {
     U8 *p_data = new U8[constants::color_space_size_24bit] { 0u };
 
-    for (U32 hex = 0u; hex < constants::color_space_size_24bit; ++hex) {
-        const Color color { hex };
+    #pragma omp parallel for
+    for (I32 hex = 0; hex < constants::color_space_size_24bit; ++hex) {
+        const Color color { (U32)hex };
 
         U8 terminal_color_code = find_closest_terminal_color(color);
         U8 color_brightness    = std::min(static_cast<U8>(15u), get_brightness_value(color));

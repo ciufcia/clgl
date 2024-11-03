@@ -21,22 +21,22 @@ void clgl::Polygon::draw(ScreenBuffer &screen_buffer) {
         I32 min_y = std::numeric_limits<I32>::max();
         I32 max_y = std::numeric_limits<I32>::min();
         for (U32 i = 0u; i < clipped_polygon_points.size(); i++) {
-            if (min_y > (I32)clipped_polygon_points[i].coordinates.y) min_y = (I32)clipped_polygon_points[i].coordinates.y;
-            if (max_y < (I32)clipped_polygon_points[i].coordinates.y) max_y = (I32)clipped_polygon_points[i].coordinates.y;
+            if (min_y > static_cast<I32>(clipped_polygon_points[i].coordinates.y)) min_y = static_cast<I32>(clipped_polygon_points[i].coordinates.y);
+            if (max_y < static_cast<I32>(clipped_polygon_points[i].coordinates.y)) max_y = static_cast<I32>(clipped_polygon_points[i].coordinates.y);
         }
 
         I32 polygon_height = max_y - min_y;
 
-        std::vector<std::vector<utils::EdgeBucket>> p_edge_vectors;
+        std::vector<std::vector<utils::EdgeBucket>> edge_vectors;
         for (U32 i = 0u; i < polygon_height; ++i) {
-            p_edge_vectors.push_back({});
+            edge_vectors.push_back({});
         }
 
         for (U32 i = 0u; i < clipped_polygon_points.size(); ++i) {
             Vec2F f_start = clipped_polygon_points[i].coordinates;
             Vec2F f_end = (i + 1 != clipped_polygon_points.size()) ? clipped_polygon_points[i + 1].coordinates : clipped_polygon_points[0].coordinates;
-            Vec2I i_start = { (I32)f_start.x, (I32)f_start.y };
-            Vec2I i_end = { (I32)f_end.x, (I32)f_end.y };
+            Vec2I i_start = { static_cast<I32>(f_start.x), static_cast<I32>(f_start.y) };
+            Vec2I i_end = { static_cast<I32>(f_end.x), static_cast<I32>(f_end.y) };
 
             if (f_start.x > f_end.x) {
                 std::swap(f_start, f_end);
@@ -60,7 +60,7 @@ void clgl::Polygon::draw(ScreenBuffer &screen_buffer) {
 
             edge.inverse_slope = (f_end.x - f_start.x) / (f_end.y - f_start.y);
 
-            p_edge_vectors[edge_min_y - min_y].push_back(edge);
+            edge_vectors[edge_min_y - min_y].push_back(edge);
         }
 
         std::vector<utils::EdgeBucket> active_edges;
@@ -73,8 +73,8 @@ void clgl::Polygon::draw(ScreenBuffer &screen_buffer) {
                 }
             }
 
-            for (U32 i = 0u; i < p_edge_vectors[y - min_y].size(); ++i) {
-                active_edges.push_back(p_edge_vectors[y - min_y][i]);
+            for (U32 i = 0u; i < edge_vectors[y - min_y].size(); ++i) {
+                active_edges.push_back(edge_vectors[y - min_y][i]);
             }
 
             utils::insertion_sort_by_x(active_edges);
@@ -111,22 +111,22 @@ void clgl::Polygon::draw_no_clipping(ScreenBuffer &screen_buffer) {
         I32 min_y = std::numeric_limits<I32>::max();
         I32 max_y = std::numeric_limits<I32>::min();
         for (U32 i = 0u; i < get_point_count(); i++) {
-            if (min_y > (I32)get_point(i).y) min_y = (I32)get_point(i).y;
-            if (max_y < (I32)get_point(i).y) max_y = (I32)get_point(i).y;
+            if (min_y > static_cast<I32>(get_point(i).y)) min_y = static_cast<I32>(get_point(i).y);
+            if (max_y < static_cast<I32>(get_point(i).y)) max_y = static_cast<I32>(get_point(i).y);
         }
 
         I32 polygon_height = max_y - min_y;
 
-        std::vector<std::vector<utils::EdgeBucket>> p_edge_vectors;
+        std::vector<std::vector<utils::EdgeBucket>> edge_vectors;
         for (U32 i = 0u; i < polygon_height; ++i) {
-            p_edge_vectors.push_back({});
+            edge_vectors.push_back({});
         }
 
         for (U32 i = 0u; i < get_point_count(); ++i) {
             Vec2F f_start = get_point(i);
             Vec2F f_end = (i + 1 != get_point_count()) ? get_point(i + 1) : get_point(0);
-            Vec2I i_start = { (I32)f_start.x, (I32)f_start.y };
-            Vec2I i_end = { (I32)f_end.x, (I32)f_end.y };
+            Vec2I i_start = { static_cast<I32>(f_start.x), static_cast<I32>(f_start.y) };
+            Vec2I i_end = { static_cast<I32>(f_end.x), static_cast<I32>(f_end.y) };
 
             if (f_start.x > f_end.x) {
                 std::swap(f_start, f_end);
@@ -150,7 +150,7 @@ void clgl::Polygon::draw_no_clipping(ScreenBuffer &screen_buffer) {
 
             edge.inverse_slope = (f_end.x - f_start.x) / (f_end.y - f_start.y);
 
-            p_edge_vectors[edge_min_y - min_y].push_back(edge);
+            edge_vectors[edge_min_y - min_y].push_back(edge);
         }
 
         std::vector<utils::EdgeBucket> active_edges;
@@ -163,8 +163,8 @@ void clgl::Polygon::draw_no_clipping(ScreenBuffer &screen_buffer) {
                 }
             }
 
-            for (U32 i = 0u; i < p_edge_vectors[y - min_y].size(); ++i) {
-                active_edges.push_back(p_edge_vectors[y - min_y][i]);
+            for (U32 i = 0u; i < edge_vectors[y - min_y].size(); ++i) {
+                active_edges.push_back(edge_vectors[y - min_y][i]);
             }
 
             utils::insertion_sort_by_x(active_edges);
@@ -223,7 +223,7 @@ clgl::F32 clgl::Polygon::rotate(F32 angle) {
 
         set_point(i, Vec2F(
             point_around_origin.x * angle_cos - point_around_origin.y * angle_sin,
-            point_around_origin.y *  angle_cos + point_around_origin.x * angle_sin
+            point_around_origin.y * angle_cos + point_around_origin.x * angle_sin
         ) + centroid);
     }
 

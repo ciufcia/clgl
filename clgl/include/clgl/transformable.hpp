@@ -15,6 +15,8 @@ public:
     virtual void set_rotation(F32 rotation) = 0;
     virtual F32  rotate(F32 angle)          = 0;
 
+    [[nodiscard]] virtual F32 get_rotation() const final;
+
 protected:
 
     F32  m_rotation = 0.f;

@@ -2,6 +2,7 @@
 
 #include "typedefs.hpp"
 #include <string>
+#include <numbers>
 
 namespace clgl::constants
 {
@@ -15,4 +16,6 @@ const     std::wstring ESCE                        = L"m";
 const     std::wstring ANSI_NEWLINE                = constants::ESCB + L"1E" + constants::ESCB + L"0G";
 const     U32          ANSI_color_length           = ESCC.size() + 11u + ESCE.size();
 const     U32          ANSI_coloring_output_length = ESCC.size() + 12u + ESCE.size();
+
+constexpr F32          half_pi                     = std::numbers::pi / 2.f;
 }

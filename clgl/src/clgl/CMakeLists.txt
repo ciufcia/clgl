@@ -1,5 +1,8 @@
+find_package(OpenMP REQUIRED)
+
 add_library(
     ${PROJECT_NAME}
+    ../external/stb_image.cpp
     clgl.cpp
     color.cpp
     screen_buffer.cpp
@@ -10,12 +13,15 @@ add_library(
     events.cpp
     input.cpp
     app.cpp
+    texture.cpp
+    transformable.cpp
     drawables/point.cpp
     drawables/line.cpp
     drawables/polygon.cpp
     drawables/circle.cpp
     drawables/intline.cpp
     drawables/intcircle.cpp
+    drawables/sprite.cpp
     drawers/full_rgb.cpp
     drawers/colors_16.cpp
     drawers/colors_16_grayscale.cpp
@@ -33,3 +39,5 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_include_directories(
     ${PROJECT_NAME} PUBLIC "../../include"
 )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX)
