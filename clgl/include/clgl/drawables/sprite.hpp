@@ -13,7 +13,7 @@ class Sprite : public Drawable, public Transformable
 public:
 
     void draw(ScreenBuffer &screen_buffer) override;
-	void draw_no_clipping(ScreenBuffer &screen_buffer) override;
+	  void draw_no_clipping(ScreenBuffer &screen_buffer) override;
 
     void set_position(const Vec2F &position);
     void move(const Vec2F &offset) override;
@@ -37,9 +37,4 @@ private:
 
     std::shared_ptr<Texture> mp_texture;
 };
-
-namespace utils
-{
-void x_shear(F32 shear, Vec2F *target, U32 width, U32 height);
-}
 }
