@@ -13,7 +13,7 @@ class Sprite : public Drawable, public Transformable
 public:
 
     void draw(ScreenBuffer &screen_buffer) override;
-	  void draw_no_clipping(ScreenBuffer &screen_buffer) override;
+	void draw_no_clipping(ScreenBuffer &screen_buffer) override;
 
     void set_position(const Vec2F &position);
     void move(const Vec2F &offset) override;
@@ -35,6 +35,6 @@ private:
 
     Vec2F m_topleft { 0.f, 0.f };
 
-    std::shared_ptr<Texture> mp_texture;
+    std::shared_ptr<Texture> mp_texture = nullptr;
 };
 }
