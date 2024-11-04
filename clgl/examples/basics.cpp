@@ -2,17 +2,14 @@
 #include <iostream>
 
 int main() {
-    clgl::Texture texture;
-
-    texture.load("man.png", L'\x2588');
-    auto pt = std::make_shared<clgl::Texture>(texture);
+    auto texture = clgl::Texture::create("man.png", L'\x2588');
 
     clgl::App app { { 250u, 250u }, { L"Consolas", { 2u, 2u } } };
     clgl::Event event;
 
     clgl::Sprite point;
 
-    point.set_texture(pt);
+    point.set_texture(texture);
 
     //clgl::Polygon point {5u, true, clgl::Pixel(clgl::Color(180u, 64u, 255u), L'@')};
 

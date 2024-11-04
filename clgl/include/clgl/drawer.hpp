@@ -30,8 +30,7 @@ void color_with_ANSI(std::wstring &output, const std::wstring &character, Color 
 
 template<typename DrawerType, typename ... Params> requires std::derived_from<DrawerType, Drawer>
 static std::shared_ptr<DrawerType> Drawer::create(Params&... params) {
-    DrawerType drawer { params... };
-    std::shared_ptr<DrawerType> p_drawer = std::make_shared<DrawerType>(drawer);
+    std::shared_ptr<DrawerType> p_drawer = std::make_shared<DrawerType>(params...);
     return p_drawer;
 }
 }

@@ -2,6 +2,7 @@
 
 #include "vec.hpp"
 #include "pixel.hpp"
+#include <memory>
 
 namespace clgl
 {
@@ -20,6 +21,10 @@ public:
     [[nodiscard]] U32          get_pixel_count() const;
 
     [[nodiscard]] const Pixel *get_pixel_data() const;
+
+    [[nodiscard]] static std::shared_ptr<Texture> create(const std::string &filename, Character character = L'@');
+    // size of "characters" must match the pixel count of the texture
+    [[nodiscard]] static std::shared_ptr<Texture> create_with_custom_characters(const std::string &filename, const std::string &characters);
 
 private:
 

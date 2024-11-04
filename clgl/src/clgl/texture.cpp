@@ -86,3 +86,15 @@ clgl::U32 clgl::Texture::get_pixel_count() const {
 const clgl::Pixel *clgl::Texture::get_pixel_data() const {
     return mp_pixels;
 }
+
+std::shared_ptr<clgl::Texture> clgl::Texture::create(const std::string &filename, Character character) {
+    std::shared_ptr<clgl::Texture> texture_pointer = std::make_shared<Texture>();
+    texture_pointer->load(filename, character);
+    return texture_pointer;
+}
+
+std::shared_ptr<clgl::Texture> clgl::Texture::create_with_custom_characters(const std::string &filename, const std::string &characters) {
+    std::shared_ptr<clgl::Texture> texture_pointer = std::make_shared<Texture>();
+    texture_pointer->load_with_custom_characters(filename, characters);
+    return texture_pointer;
+}
