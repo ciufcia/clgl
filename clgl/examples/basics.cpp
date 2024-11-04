@@ -7,7 +7,7 @@ int main() {
     texture.load("man.png", L'\x2588');
     auto pt = std::make_shared<clgl::Texture>(texture);
 
-    clgl::App app { { 100u, 80u }, { L"Consolas", { 10u, 10u } } };
+    clgl::App app { { 250u, 250u }, { L"Consolas", { 2u, 2u } } };
     clgl::Event event;
 
     clgl::Sprite point;
@@ -62,7 +62,7 @@ int main() {
 
         app.screen.fill({ { 0u, 0u, 0u }, L'#' });
 
-        app.screen.draw_no_clipping(point);
+        app.screen.draw(point);
 
         app.display();
     }

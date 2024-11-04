@@ -47,27 +47,19 @@ void clgl::Sprite::draw_normal(ScreenBuffer &screen_buffer) {
     Vec2I bottomright = topleft + mp_texture->get_size();
 
     Vec2I clipped_topleft = {
-        std::clamp(topleft.x, 0, static_cast<I32>(screen_buffer.get_max_int_coordinates().x)),
-        std::clamp(topleft.y, 0, static_cast<I32>(screen_buffer.get_max_int_coordinates().y))
+        std::clamp(topleft.x, 0, static_cast<I32>(screen_buffer.get_size().x)),
+        std::clamp(topleft.y, 0, static_cast<I32>(screen_buffer.get_size().y))
     };
 
     Vec2I clipped_bottomright = {
-        std::clamp(bottomright.x, 0, static_cast<I32>(screen_buffer.get_max_int_coordinates().x)),
-        std::clamp(bottomright.y, 0, static_cast<I32>(screen_buffer.get_max_int_coordinates().y))
+        std::clamp(bottomright.x, 0, static_cast<I32>(screen_buffer.get_size().x)),
+        std::clamp(bottomright.y, 0, static_cast<I32>(screen_buffer.get_size().y))
     };
 
-    Vec2I topleft_shift = clipped_topleft - topleft;
-    I32 shifted_width = mp_texture->get_size().x - topleft_shift.x;
-    I32 clipped_texture_topleft = topleft_shift.x + topleft_shift.y * mp_texture->get_size().x;
-    I32 texture_index = clipped_texture_topleft;
-    I32 y_counter = 0u;
-
-    U32 current_index = 0u;
-    for (U32 y = 0u; y < mp_texture->get_size().y; ++y) {
-        current_index = y * mp_texture->get_size().x;
-        for (U32 x = 0u; x < mp_texture->get_size().x; ++x) {
-            screen_buffer.set_pixel(topleft + Vec2U(x, y), mp_texture->get_pixel_data()[current_index]);
-            ++current_index;
+    #pragma omp parallel for
+    for (I32 y = clipped_topleft.y; y < clipped_bottomright.y; ++y) {
+        for (I32 x = clipped_topleft.x; x < clipped_bottomright.x; ++x) {
+            screen_buffer.set_pixel(Vec2U(x, y), mp_texture->get_pixel_data()[(x - topleft.x) + (y - topleft.y) * mp_texture->get_size().x]);
         }
     }
 }
@@ -131,17 +123,17 @@ void clgl::Sprite::draw_rotated(ScreenBuffer &screen_buffer) {
                 topright_color = mp_texture->get_pixel_data()[topleft_pixel_index + 1].color;
                 bottomleft_color = topleft_color;
                 bottomright_color = Color(
-                    (topleft_color.r + topright_color.r) >> 2,
-                    (topleft_color.g + topright_color.g) >> 2,
-                    (topleft_color.b + topright_color.b) >> 2
+                    static_cast<U8>((static_cast<U32>(topleft_color.r) + static_cast<U32>(topright_color.r)) >> 2),
+                    static_cast<U8>((static_cast<U32>(topleft_color.g) + static_cast<U32>(topright_color.g)) >> 2),
+                    static_cast<U8>((static_cast<U32>(topleft_color.b) + static_cast<U32>(topright_color.b)) >> 2)
                 );
             } else if (bottom_in) {
                 topright_color = topleft_color;
                 bottomleft_color = mp_texture->get_pixel_data()[topleft_pixel_index + mp_texture->get_size().x].color;
                 bottomright_color = Color(
-                    (topleft_color.r + bottomleft_color.r) >> 2,
-                    (topleft_color.g + bottomleft_color.g) >> 2,
-                    (topleft_color.b + bottomleft_color.b) >> 2
+                    static_cast<U8>((static_cast<U32>(topleft_color.r) + static_cast<U32>(bottomleft_color.r)) >> 2),
+                    static_cast<U8>((static_cast<U32>(topleft_color.g) + static_cast<U32>(bottomleft_color.g)) >> 2),
+                    static_cast<U8>((static_cast<U32>(topleft_color.b) + static_cast<U32>(bottomleft_color.b)) >> 2)
                 );
             } else {
                 topright_color = topleft_color;
@@ -185,12 +177,10 @@ void clgl::Sprite::draw_rotated(ScreenBuffer &screen_buffer) {
 
 void clgl::Sprite::draw_no_clipping_normal(ScreenBuffer &screen_buffer) {
     Vec2U topleft = Vec2U(m_topleft);
-    U32 current_index = 0u;
-    for (U32 y = 0u; y < mp_texture->get_size().y; ++y) {
-        current_index = y * mp_texture->get_size().x;
-        for (U32 x = 0u; x < mp_texture->get_size().x; ++x) {
-            screen_buffer.set_pixel(topleft + Vec2U(x, y), mp_texture->get_pixel_data()[current_index]);
-            ++current_index;
+    #pragma omp parallel for
+    for (I32 y = 0u; y < mp_texture->get_size().y; ++y) {
+        for (I32 x = 0u; x < mp_texture->get_size().x; ++x) {
+            screen_buffer.set_pixel(topleft + Vec2U(x, y), mp_texture->get_pixel_data()[x + y * mp_texture->get_size().x]);
         }
     }
 }
@@ -254,17 +244,17 @@ void clgl::Sprite::draw_no_clipping_rotated(ScreenBuffer &screen_buffer) {
                 topright_color = mp_texture->get_pixel_data()[topleft_pixel_index + 1].color;
                 bottomleft_color = topleft_color;
                 bottomright_color = Color(
-                    (topleft_color.r + topright_color.r) >> 2,
-                    (topleft_color.g + topright_color.g) >> 2,
-                    (topleft_color.b + topright_color.b) >> 2
+                    static_cast<U8>((static_cast<U32>(topleft_color.r) + static_cast<U32>(topright_color.r)) >> 2),
+                    static_cast<U8>((static_cast<U32>(topleft_color.g) + static_cast<U32>(topright_color.g)) >> 2),
+                    static_cast<U8>((static_cast<U32>(topleft_color.b) + static_cast<U32>(topright_color.b)) >> 2)
                 );
             } else if (bottom_in) {
                 topright_color = topleft_color;
                 bottomleft_color = mp_texture->get_pixel_data()[topleft_pixel_index + mp_texture->get_size().x].color;
                 bottomright_color = Color(
-                    (topleft_color.r + bottomleft_color.r) >> 2,
-                    (topleft_color.g + bottomleft_color.g) >> 2,
-                    (topleft_color.b + bottomleft_color.b) >> 2
+                    static_cast<U8>((static_cast<U32>(topleft_color.r) + static_cast<U32>(bottomleft_color.r)) >> 2),
+                    static_cast<U8>((static_cast<U32>(topleft_color.g) + static_cast<U32>(bottomleft_color.g)) >> 2),
+                    static_cast<U8>((static_cast<U32>(topleft_color.b) + static_cast<U32>(bottomleft_color.b)) >> 2)
                 );
             } else {
                 topright_color = topleft_color;
@@ -302,18 +292,6 @@ void clgl::Sprite::draw_no_clipping_rotated(ScreenBuffer &screen_buffer) {
             };
 
             screen_buffer.set_pixel(Vec2F(x, y) - offset + m_topleft, Pixel(interpolated_color, character));
-        }
-    }
-}
-
-void clgl::utils::x_shear(F32 shear, Vec2F *target, U32 width, U32 height) {
-    U32 texture_index = 0u;
-    for (U32 y = 0u; y < height; ++y) {
-        texture_index = y * width;
-        for (U32 x = 0u; x < width; ++x) {
-            target[texture_index] += shear * y;
-
-            ++texture_index;
         }
     }
 }
