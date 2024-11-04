@@ -253,11 +253,19 @@ void clgl::Sprite::draw_no_clipping_rotated(ScreenBuffer &screen_buffer) {
             } else if (right_in) {
                 topright_color = mp_texture->get_pixel_data()[topleft_pixel_index + 1].color;
                 bottomleft_color = topleft_color;
-                bottomright_color = topleft_color;
+                bottomright_color = Color(
+                    (topleft_color.r + topright_color.r) >> 2,
+                    (topleft_color.g + topright_color.g) >> 2,
+                    (topleft_color.b + topright_color.b) >> 2
+                );
             } else if (bottom_in) {
                 topright_color = topleft_color;
                 bottomleft_color = mp_texture->get_pixel_data()[topleft_pixel_index + mp_texture->get_size().x].color;
-                bottomright_color = topleft_color;
+                bottomright_color = Color(
+                    (topleft_color.r + bottomleft_color.r) >> 2,
+                    (topleft_color.g + bottomleft_color.g) >> 2,
+                    (topleft_color.b + bottomleft_color.b) >> 2
+                );
             } else {
                 topright_color = topleft_color;
                 bottomleft_color = topleft_color;
