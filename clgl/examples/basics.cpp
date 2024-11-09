@@ -2,24 +2,32 @@
 #include <iostream>
 
 int main() {
-    auto texture = clgl::Texture::create("man.png", L'\x2588');
-
-    clgl::App app { { 250u, 250u }, { L"Consolas", { 2u, 2u } } };
+    clgl::App app { { 100u, 100u }, { L"Consolas", { 5u, 5u } } };
     clgl::Event event;
-
+    
     clgl::Sprite point;
+    auto p_texture = clgl::Texture::create("thing.png", L'\x2588');
+    point.set_texture(p_texture);
 
-    point.set_texture(texture);
+    point.set_scale({ 2, 1 });
+    
 
-    //clgl::Polygon point {5u, true, clgl::Pixel(clgl::Color(180u, 64u, 255u), L'@')};
+    app.screen.register_and_set_drawer<clgl::drawers::Colors16>();
 
-    //point.set_point(0u, {0, 0});
-    //point.set_point(1u, {5, 2});
-    //point.set_point(2u, {17, 20});
-    //point.set_point(3u, {14, 33});
-    //point.set_point(4u, {-4, 10});
+    /*
+    clgl::Polygon point {5u, true, clgl::Pixel(clgl::Color(180u, 64u, 255u), L'@')};
 
-    point.move({20.f, 0.f});
+    point.set_point(0u, {0, 0});
+    point.set_point(1u, {5, 2});
+    point.set_point(2u, {17, 20});
+    point.set_point(3u, {14, 33});
+    point.set_point(4u, {-4, 10});
+
+    clgl::Vec2F centroid = point.calculate_centroid();
+
+    point.set_origin(centroid);
+
+    point.set_scale({3, 7});*/
 
     while (true) {
         while (app.input.pollEvent(event)) {
@@ -57,7 +65,7 @@ int main() {
             point.rotate(200.f * f_delta_time.count());
         }
 
-        app.screen.fill({ { 0u, 0u, 0u }, L'#' });
+        app.screen.fill({ { 255u, 255u, 0u }, L'#' });
 
         app.screen.draw(point);
 

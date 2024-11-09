@@ -11,9 +11,12 @@ clgl::Polygon::Polygon(U32 point_count, bool filled, const Pixel &pixel) {
 }
 
 void clgl::Polygon::draw(ScreenBuffer &screen_buffer) {
+    std::vector<Vec2F> polygon_points;
     std::vector<utils::ClippedPolygonPoint> clipped_polygon_points;
 
-    clip_polygon(*this, clipped_polygon_points, { 0.f, 0.f }, screen_buffer.get_max_float_coordinates());
+    transform_points(polygon_points);
+
+    clip_polygon(polygon_points, clipped_polygon_points, { 0.f, 0.f }, screen_buffer.get_max_float_coordinates());
 
     if (clipped_polygon_points.size() == 0) return;
 
@@ -107,12 +110,16 @@ void clgl::Polygon::draw(ScreenBuffer &screen_buffer) {
 }
 
 void clgl::Polygon::draw_no_clipping(ScreenBuffer &screen_buffer) {
+    std::vector<Vec2F> polygon_points;
+
+    transform_points(polygon_points);
+
     if (filled) {
         I32 min_y = std::numeric_limits<I32>::max();
         I32 max_y = std::numeric_limits<I32>::min();
         for (U32 i = 0u; i < get_point_count(); i++) {
-            if (min_y > static_cast<I32>(get_point(i).y)) min_y = static_cast<I32>(get_point(i).y);
-            if (max_y < static_cast<I32>(get_point(i).y)) max_y = static_cast<I32>(get_point(i).y);
+            if (min_y > static_cast<I32>(polygon_points[i].y)) min_y = static_cast<I32>(polygon_points[i].y);
+            if (max_y < static_cast<I32>(polygon_points[i].y)) max_y = static_cast<I32>(polygon_points[i].y);
         }
 
         I32 polygon_height = max_y - min_y;
@@ -123,8 +130,8 @@ void clgl::Polygon::draw_no_clipping(ScreenBuffer &screen_buffer) {
         }
 
         for (U32 i = 0u; i < get_point_count(); ++i) {
-            Vec2F f_start = get_point(i);
-            Vec2F f_end = (i + 1 != get_point_count()) ? get_point(i + 1) : get_point(0);
+            Vec2F f_start = polygon_points[i];
+            Vec2F f_end = (i + 1 != get_point_count()) ? polygon_points[i + 1] : polygon_points[0];
             Vec2I i_start = { static_cast<I32>(f_start.x), static_cast<I32>(f_start.y) };
             Vec2I i_end = { static_cast<I32>(f_end.x), static_cast<I32>(f_end.y) };
 
@@ -186,54 +193,17 @@ void clgl::Polygon::draw_no_clipping(ScreenBuffer &screen_buffer) {
     U32 last_point = get_point_count() - 1u;
 
     for (U32 i = 0u; i < last_point; ++i) {
-        Line line { get_point(i), get_point(i + 1), pixel };
+        Line line { polygon_points[i], polygon_points[i + 1], pixel };
         line.draw_no_clipping(screen_buffer);
     }
 
-    Line line { get_point(last_point), get_point(0u), pixel };
+    Line line { polygon_points[last_point], polygon_points[0], pixel };
     line.draw_no_clipping(screen_buffer);
-}
-
-void clgl::Polygon::move(const Vec2F &offset) {
-    for (U32 i = 0u; i < get_point_count(); ++i) {
-        m_points[i] += offset;
-    }
-}
-
-void clgl::Polygon::set_rotation(F32 rotation) {
-    F32 delta = rotation - m_rotation;
-
-    rotate(delta);
-}
-
-clgl::F32 clgl::Polygon::rotate(F32 angle) {
-    Vec2F centroid { 0.f, 0.f };
-
-    for (U32 i = 0u; i < get_point_count(); ++i) centroid += get_point(i);
-
-    centroid = { centroid.x / static_cast<F32>(get_point_count()), centroid.y / static_cast<F32>(get_point_count()) };
-
-    F32 angle_in_radians = angle * static_cast<F32>(std::numbers::pi) * utils::inverse_180;
-
-    F32 angle_cos = std::cos(angle_in_radians);
-    F32 angle_sin = std::sin(angle_in_radians);
-
-    for (U32 i = 0u; i < get_point_count(); ++i) {
-        Vec2F point_around_origin = get_point(i) - centroid;
-
-        set_point(i, Vec2F(
-            point_around_origin.x * angle_cos - point_around_origin.y * angle_sin,
-            point_around_origin.y * angle_cos + point_around_origin.x * angle_sin
-        ) + centroid);
-    }
-
-    m_rotation += angle;
-
-    return m_rotation;
 }
 
 void clgl::Polygon::set_point_count(U32 point_count) {
     m_points.resize(point_count, { 0.f, 0.f });
+    set_origin({ std::numeric_limits<F32>::max(), std::numeric_limits<F32>::max() });
 }
 
 clgl::U32 clgl::Polygon::get_point_count() const {
@@ -242,6 +212,9 @@ clgl::U32 clgl::Polygon::get_point_count() const {
 
 void clgl::Polygon::set_point(U32 index, const Vec2F &point) {
     m_points[index] = point;
+
+    if (point.x < m_origin.x) m_origin.x = point.x;
+    if (point.y < m_origin.y) m_origin.y = point.y;
 }
 
 clgl::Vec2F clgl::Polygon::get_point(U32 index) const {
@@ -252,8 +225,26 @@ const std::vector<clgl::Vec2F> &clgl::Polygon::get_points() const {
     return m_points;
 }
 
-void clgl::utils::clip_polygon(const Polygon &target, std::vector<ClippedPolygonPoint> &output, const Vec2F &top_left, const Vec2F &bottom_right) {
-    clip_polygon<F32>(target.get_points(), output, top_left, bottom_right);
+void clgl::Polygon::transform_points(std::vector<Vec2F> &output) const {
+    output = m_points;
+
+    F32 angle_in_radians = get_rotation() * static_cast<F32>(std::numbers::pi) * utils::inverse_180;
+
+    F32 angle_cos = std::cos(angle_in_radians);
+    F32 angle_sin = std::sin(angle_in_radians);
+
+    #pragma omp parallel for
+    for (I32 i = 0u; i < get_point_count(); ++i) {
+        apply_transform(output[i], angle_cos, angle_sin);
+    }
+}
+
+clgl::Vec2F clgl::Polygon::calculate_centroid() const {
+    Vec2F centroid { 0.f, 0.f };
+
+    for (U32 i = 0u; i < get_point_count(); ++i) centroid += get_point(i);
+
+    return centroid / static_cast<F32>(get_point_count()); 
 }
 
 void clgl::utils::insertion_sort_by_x(std::vector<EdgeBucket> &vec) {
@@ -337,4 +328,22 @@ void clgl::utils::clip_edge_by_bound(const BoundEdgeData &bound, const ClippedPo
             new_points.push_back(end);
         }
     }
+}
+
+void clgl::utils::clip_polygon(const std::vector<Vec2F> &target, std::vector<ClippedPolygonPoint> &output, const Vec2F &top_left, const Vec2F &bottom_right){
+    output.reserve(target.size());
+
+    std::vector<ClippedPolygonPoint> old_points;
+    old_points.reserve(target.size());
+    for (U32 i = 0u; i < target.size(); ++i) {
+        old_points.push_back({Vec2F(target[i]), false});
+    }
+
+    clip_polygon_by_bound({BoundPosition::Left, top_left.x}, old_points, output);
+    old_points = std::move(output); output.clear();
+    clip_polygon_by_bound({BoundPosition::Top, top_left.y}, old_points, output);
+    old_points = std::move(output); output.clear();
+    clip_polygon_by_bound({BoundPosition::Right, bottom_right.x}, old_points, output);
+    old_points = std::move(output); output.clear();
+    clip_polygon_by_bound({BoundPosition::Bottom, bottom_right.y}, old_points, output);
 }

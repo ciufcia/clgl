@@ -23,6 +23,8 @@ public:
     void                       operator-=(Number number);
     [[nodiscard]] Vec2<Number> operator*(Number number) const;
     void                       operator*=(Number number);
+    [[nodiscard]] Vec2<Number> operator/(Number number) const;
+    void                       operator/=(Number number);
     [[nodiscard]] bool         operator==(const Vec2<Number> &other) const;
     [[nodiscard]] bool         operator!=(const Vec2<Number> &other) const;
 
@@ -82,6 +84,16 @@ clgl::Vec2<Number> clgl::Vec2<Number>::operator*(Number number) const {
 template<typename Number>
 void clgl::Vec2<Number>::operator*=(Number number) {
     x *= number; y *= number;
+}
+
+template<typename Number>
+clgl::Vec2<Number> clgl::Vec2<Number>::operator/(Number number) const {
+    return { x / number, y / number };
+}
+
+template<typename Number>
+void clgl::Vec2<Number>::operator/=(Number number) {
+    x /= number; y /= number;
 }
 
 template<typename Number>
