@@ -3,6 +3,7 @@
 #include "screen.hpp"
 #include "input.hpp"
 #include "timings.hpp"
+#include "clgl_resource_manager.hpp"
 
 namespace clgl
 {
@@ -27,9 +28,13 @@ public:
 
     Input  input;
 
+    CLGLResourceManager resource_manager;
+
 private:
 
     void get_handles();
+
+    void pass_resource_manager();
 
 private:
 

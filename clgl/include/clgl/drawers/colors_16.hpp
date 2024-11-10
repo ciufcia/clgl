@@ -10,6 +10,14 @@ public:
 
     Colors16() = default;
 
-    virtual void run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer, const ColorMappings &color_mappings) override;
+    virtual void run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) override;
+
+protected:
+
+    virtual void on_set() override;
+
+private:
+
+    const ColorMappings *p_color_mappings = nullptr;
 };
 }

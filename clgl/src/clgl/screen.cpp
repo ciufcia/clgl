@@ -153,7 +153,7 @@ void clgl::Screen::init(const winapi::Handles &handles, const Vec2U &size, const
 }
 
 void clgl::Screen::display() {
-    mp_current_drawer->run(m_screen_buffer, m_screen_writer, m_color_mappings);
+    mp_current_drawer->run(m_screen_buffer, m_screen_writer);
 }
 
 void clgl::Screen::pass_handles(const winapi::Handles &handles) {
@@ -163,7 +163,8 @@ void clgl::Screen::pass_handles(const winapi::Handles &handles) {
 }
 
 void clgl::Screen::load_color_mappings() {
-    m_color_mappings.load();
+    ColorMappings *color_mappings = mp_resource_manager->load_resource<ColorMappings>();
+    color_mappings->load();
 }
 
 void clgl::Screen::set_console_output_mode() {

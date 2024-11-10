@@ -18,4 +18,5 @@
 #include "shading_palettes.hpp"
 #include "exceptions.hpp"
 #include "texture.hpp"
+#include "clgl_resource_manager.hpp"
 #include "utils/utils.hpp"

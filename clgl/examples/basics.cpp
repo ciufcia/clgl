@@ -1,5 +1,6 @@
 #include "clgl/clgl.hpp"
 #include <iostream>
+#include <unordered_map>
 
 int main() {
     clgl::App app { { 100u, 100u }, { L"Consolas", { 5u, 5u } } };
@@ -10,7 +11,6 @@ int main() {
     point.set_texture(p_texture);
 
     point.set_scale({ 2, 1 });
-    
 
     app.screen.register_and_set_drawer<clgl::drawers::Colors16>();
 
@@ -71,6 +71,6 @@ int main() {
 
         app.display();
     }
-
+    
     return 0;
 }

@@ -2,6 +2,7 @@
 
 #include "typedefs.hpp"
 #include "constants.hpp"
+#include "clgl_resource.hpp"
 
 namespace clgl
 {
@@ -87,7 +88,7 @@ struct ColorMapping
  * 
  *  Once loaded this objects takes up a lot of memory, so beware
  */
-class ColorMappings
+class ColorMappings : public CLGLResource
 {
 public:
 

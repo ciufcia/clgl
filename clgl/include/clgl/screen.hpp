@@ -11,6 +11,7 @@
 #include "drawer.hpp"
 #include "drawable.hpp"
 #include "exceptions.hpp"
+#include "clgl_resource_manager.hpp"
 
 namespace clgl
 {
@@ -99,7 +100,7 @@ private:
     ScreenBuffer                         m_screen_buffer;
     ScreenWriter                         m_screen_writer;
 
-    ColorMappings                        m_color_mappings;
+    CLGLResourceManager *                mp_resource_manager;
 
     U32                                  m_current_drawer_id = 0u;
     std::shared_ptr<Drawer>              mp_current_drawer = nullptr;
@@ -135,6 +136,9 @@ DrawerInfo<DrawerType> Screen::register_drawer(Params&... params) {
     std::shared_ptr<DrawerType> p_drawer = Drawer::create<DrawerType>(params...);
     const U32                   index = m_drawers.size();
 
+    p_drawer->mp_resource_manager = mp_resource_manager;
+    p_drawer->on_registered();
+
     m_drawers.push_back(p_drawer);
     m_drawer_indices.insert({ hash_code, index });
 
@@ -156,6 +160,9 @@ DrawerInfo<DrawerType> Screen::get_drawer() {
 
 template<typename DrawerType> requires std::derived_from<DrawerType, Drawer>
 void Screen::set_drawer() {
+    if (mp_current_drawer != nullptr)
+        mp_current_drawer->on_unset();
+
     const std::size_t hash_code = typeid(DrawerType).hash_code();
     const auto        iter      = m_drawer_indices.find(hash_code);
 
@@ -163,6 +170,8 @@ void Screen::set_drawer() {
 
     m_current_drawer_id = iter->second;
     mp_current_drawer   = m_drawers[m_current_drawer_id];
+
+    mp_current_drawer->on_set();
 }
 
 template<typename DrawerType, typename ... Params> requires std::derived_from<DrawerType, Drawer>

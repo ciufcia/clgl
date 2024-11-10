@@ -1,6 +1,6 @@
 #include "clgl/drawers/full_rgb.hpp"
 
-void clgl::drawers::FullRGB::run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer, const ColorMappings &color_mappings) {
+void clgl::drawers::FullRGB::run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) {
     screen_writer.clear_string_buffer();
 
     std::wstring coloring_string = L"";

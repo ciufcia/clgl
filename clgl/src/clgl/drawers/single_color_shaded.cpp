@@ -1,7 +1,7 @@
 #include "clgl/drawers/single_color_shaded.hpp"
 #include <stdexcept>
 
-void clgl::drawers::SingleColorShaded::run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer, const ColorMappings &color_mappings) {
+void clgl::drawers::SingleColorShaded::run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) {
     screen_writer.clear_string_buffer();
 
     std::wstring coloring_string = L"";
@@ -18,7 +18,7 @@ void clgl::drawers::SingleColorShaded::run(const ScreenBuffer &screen_buffer, Sc
         for (U32 x = 0u; x < screen_buffer.get_size().x; ++x) {
             const Pixel &pixel = screen_buffer.get_pixel(current_index);
 
-            U8 brightness = color_mappings.get_color_mapping(pixel.color).brightness_value;
+            U8 brightness = p_color_mappings->get_color_mapping(pixel.color).brightness_value;
 
             screen_writer.string_buffer += m_shading_palette[brightness];
 
@@ -42,4 +42,8 @@ void clgl::drawers::SingleColorShaded::set_shading_palette(const std::wstring &s
 
 const std::wstring &clgl::drawers::SingleColorShaded::get_shading_palette() const {
     return m_shading_palette;
+}
+
+void clgl::drawers::SingleColorShaded::on_set() {
+    p_color_mappings = get_resource_manager()->access_resource<clgl::ColorMappings>();
 }

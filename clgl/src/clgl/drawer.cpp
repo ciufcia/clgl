@@ -1,6 +1,10 @@
 #include "clgl/drawer.hpp"
 #include "clgl/constants.hpp"
 
+clgl::CLGLResourceManager * clgl::Drawer::get_resource_manager() const {
+    return mp_resource_manager;
+}
+
 void clgl::utils::get_ANSI_color(std::wstring &output, Color color) {
     output.reserve(constants::ANSI_color_length);
 

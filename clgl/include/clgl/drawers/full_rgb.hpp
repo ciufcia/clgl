@@ -10,6 +10,6 @@ public:
 
     FullRGB() = default;
 
-    virtual void run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer, const ColorMappings &color_mappings) override;
+    virtual void run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) override;
 };
 }

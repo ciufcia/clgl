@@ -1,8 +1,8 @@
 #include "clgl/drawers/single_color_16_shaded.hpp"
 #include <stdexcept>
 
-void clgl::drawers::SingleColor16Shaded::run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer, const ColorMappings &color_mappings) {
-    U8 console_color = color_mappings.get_color_mapping(color).color_code;
+void clgl::drawers::SingleColor16Shaded::run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) {
+    U8 console_color = p_color_mappings->get_color_mapping(color).color_code;
 
     #pragma omp parallel for
     for (I32 i = 0u; i < screen_buffer.get_pixel_count(); ++i) {
@@ -10,7 +10,7 @@ void clgl::drawers::SingleColor16Shaded::run(const ScreenBuffer &screen_buffer, 
 
         CHAR_INFO &char_info = screen_writer.p_char_info_buffer[i];
 
-        U8 brightness              = color_mappings.get_color_mapping(pixel.color).brightness_value;
+        U8 brightness              = p_color_mappings->get_color_mapping(pixel.color).brightness_value;
         char_info.Char.UnicodeChar = m_shading_palette[brightness];
         char_info.Attributes       = console_color;
     }
@@ -26,4 +26,8 @@ void clgl::drawers::SingleColor16Shaded::set_shading_palette(const std::wstring 
 
 const std::wstring &clgl::drawers::SingleColor16Shaded::get_shading_palette() const {
     return m_shading_palette;
+}
+
+void clgl::drawers::SingleColor16Shaded::on_set() {
+    p_color_mappings = get_resource_manager()->access_resource<clgl::ColorMappings>();
 }

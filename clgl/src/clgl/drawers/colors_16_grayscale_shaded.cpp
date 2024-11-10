@@ -2,14 +2,14 @@
 #include <stdexcept>
 #include <string>
 
-void clgl::drawers::Colors16GrayscaleShaded::run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer, const ColorMappings &color_mappings) {
+void clgl::drawers::Colors16GrayscaleShaded::run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) {
     #pragma omp parallel for
     for (I32 i = 0u; i < screen_buffer.get_pixel_count(); ++i) {
         const Pixel &pixel = screen_buffer.get_pixel(i);
 
         CHAR_INFO &char_info = screen_writer.p_char_info_buffer[i];
 
-        U8 brightness = color_mappings.get_color_mapping(pixel.color).brightness_value;
+        U8 brightness = p_color_mappings->get_color_mapping(pixel.color).brightness_value;
 
         U8 color_index     = (brightness  & 0b1100) >> 2;
         U8 character_index = brightness & 0b0011;
@@ -19,6 +19,10 @@ void clgl::drawers::Colors16GrayscaleShaded::run(const ScreenBuffer &screen_buff
     }
 
     screen_writer.write_char_info_buffer();
+}
+
+void clgl::drawers::Colors16GrayscaleShaded::on_set() {
+    p_color_mappings = get_resource_manager()->access_resource<clgl::ColorMappings>();
 }
 
 void clgl::drawers::Colors16GrayscaleShaded::set_shading_palette(const std::wstring &shading_palette) {

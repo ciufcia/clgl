@@ -5,9 +5,12 @@
 #include "screen_buffer.hpp"
 #include "color.hpp"
 #include <memory>
+#include "clgl_resource_manager.hpp"
 
 namespace clgl
 {
+class Screen;
+
 class Drawer
 {
 public:
@@ -15,10 +18,24 @@ public:
                  Drawer() = default;
     virtual      ~Drawer() = default;
 
-    virtual void run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer, const ColorMappings &color_mappings) = 0;
+    virtual void run(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) = 0;
 
     template<typename DrawerType, typename ... Params> requires std::derived_from<DrawerType, Drawer>
     [[nodiscard]] static std::shared_ptr<DrawerType> create(Params&... params);
+
+protected:
+
+    virtual void on_registered() {};
+    virtual void on_set() {};
+    virtual void on_unset() {};
+
+    [[nodiscard]] virtual CLGLResourceManager * get_resource_manager() const final;
+
+private:
+
+    CLGLResourceManager *mp_resource_manager = nullptr;
+
+friend class Screen;
 };
 
 namespace utils
