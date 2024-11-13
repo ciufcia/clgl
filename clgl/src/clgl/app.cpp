@@ -5,20 +5,32 @@ clgl::App::App(const Vec2U &screen_size, const FontData &font) {
 
     pass_resource_manager();
 
-    screen.init(m_handles, screen_size, font);
+    m_screen.init(m_handles, screen_size, font);
 
-    input.init(m_handles);
+    m_input.init(m_handles);
+}
+
+clgl::Screen &clgl::App::get_screen() {
+    return m_screen;
+}
+
+clgl::Input &clgl::App::get_input() {
+    return m_input;
+}
+
+clgl::CLGLResourceManager &clgl::App::get_resource_manager() {
+    return m_resource_manager;
 }
 
 void clgl::App::close() {
-    screen.restore_initial_settings();
-    input.restore_initial_settings();
+    m_screen.restore_initial_settings();
+    m_input.restore_initial_settings();
 }
 
 void clgl::App::display() {
-    screen.display();
+    m_screen.display();
 
-    input.fill_input_queue();
+    m_input.fill_input_queue();
 
     m_last_frame_time = m_clock.time_passed<clgl::Microseconds>();
 
@@ -41,5 +53,5 @@ void clgl::App::get_handles() {
 }
 
 void clgl::App::pass_resource_manager() {
-    screen.mp_resource_manager = &resource_manager;
+    m_screen.mp_resource_manager = &m_resource_manager;
 }

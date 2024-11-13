@@ -37,6 +37,9 @@ public:
     [[nodiscard]] const Pixel *get_pixels() const;
     [[nodiscard]] U32          get_pixel_count() const;
 
+                  void         enable_color_blending(bool value = true);
+    [[nodiscard]] bool         is_color_blending_enabled() const;
+
 private:
 
     Vec2U     m_size                        { 0u, 0u };
@@ -49,5 +52,7 @@ private:
     U32       m_pixel_count                 = 0u;
 
     Pixel *   mp_pixels                     = nullptr;
+
+    bool      m_color_blending_enabled      = false;
 };
 }

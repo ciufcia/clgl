@@ -35,7 +35,7 @@ void clgl::Sprite::draw(ScreenBuffer &screen_buffer) {
 
     Vec2I size = bottomright - topleft;
 
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (I32 y = 0; y <= size.y; ++y) {
         for (I32 x = 0; x <= size.x; ++x) {
             Vec2F destination_coordinates = Vec2F(x, y) + topleft;
@@ -50,12 +50,17 @@ void clgl::Sprite::draw(ScreenBuffer &screen_buffer) {
                 translated.y < 0.f ||
                 translated.x >= static_cast<F32>(mp_texture->get_size().x) ||
                 translated.y >= static_cast<F32>(mp_texture->get_size().y)
-                ) continue;
+            ) continue;
 
             Pixel pixel;
             utils::interpolate_pixel(translated, pixel, *mp_texture);
 
             apply_translation(destination_coordinates);
+
+            destination_coordinates = {
+                std::floorf(destination_coordinates.x),
+                std::floorf(destination_coordinates.y)
+            };
 
             screen_buffer.set_pixel_safe(destination_coordinates, pixel);
         }
@@ -107,12 +112,17 @@ void clgl::Sprite::draw_no_clipping(ScreenBuffer &screen_buffer) {
                 translated.y < 0.f ||
                 translated.x >= static_cast<F32>(mp_texture->get_size().x) ||
                 translated.y >= static_cast<F32>(mp_texture->get_size().y)
-                ) continue;
+            ) continue;
 
             Pixel pixel;
             utils::interpolate_pixel(translated, pixel, *mp_texture);
 
             apply_translation(destination_coordinates);
+
+            destination_coordinates = {
+                std::floorf(destination_coordinates.x),
+                std::floorf(destination_coordinates.y)
+            };
 
             screen_buffer.set_pixel(destination_coordinates, pixel);
         }
@@ -133,28 +143,40 @@ void clgl::utils::interpolate_pixel(const Vec2F &coordinates, Pixel &output, con
 
     topleft_color                   = texture.get_pixel(topleft_pixel_index).color;
 
+    if (!topleft_color.a) {
+        output.color = topleft_color;
+        return;
+    }
+
     bool right_in                   = topleft_pixel_topleft.x + 1.f < static_cast<F32>(texture.get_size().x);
     bool bottom_in                  = topleft_pixel_topleft.y + 1.f < static_cast<F32>(texture.get_size().y);
 
     if (right_in && bottom_in) {
         topright_color    = texture.get_pixel(topleft_pixel_index + 1).color;
+        if (!topright_color.a) topright_color = topleft_color;
         bottomleft_color  = texture.get_pixel(topleft_pixel_index + texture.get_size().x).color;
+        if (!bottomleft_color.a) bottomleft_color = topleft_color;
         bottomright_color = texture.get_pixel(topleft_pixel_index + texture.get_size().x + 1).color;
+        if (!bottomright_color.a) bottomright_color = topleft_color;
     } else if (right_in) {
         topright_color    = texture.get_pixel(topleft_pixel_index + 1).color;
+        if (!topright_color.a) topright_color = topleft_color;
         bottomleft_color  = topleft_color;
         bottomright_color = Color(
             static_cast<U8>(((static_cast<U32>(topleft_color.r) + static_cast<U32>(topright_color.r))) >> 1),
             static_cast<U8>(((static_cast<U32>(topleft_color.g) + static_cast<U32>(topright_color.g))) >> 1),
-            static_cast<U8>(((static_cast<U32>(topleft_color.b) + static_cast<U32>(topright_color.b))) >> 1)
+            static_cast<U8>(((static_cast<U32>(topleft_color.b) + static_cast<U32>(topright_color.b))) >> 1),
+            static_cast<U8>(((static_cast<U32>(topleft_color.a) + static_cast<U32>(topright_color.a))) >> 1)
         );
     } else if (bottom_in) {
         topright_color    = topleft_color;
         bottomleft_color  = texture.get_pixel(topleft_pixel_index + texture.get_size().x).color;
+        if (!bottomleft_color.a) bottomleft_color = topleft_color;
         bottomright_color = Color(
             static_cast<U8>(((static_cast<U32>(topleft_color.r) + static_cast<U32>(bottomleft_color.r))) >> 1),
             static_cast<U8>(((static_cast<U32>(topleft_color.g) + static_cast<U32>(bottomleft_color.g))) >> 1),
-            static_cast<U8>(((static_cast<U32>(topleft_color.b) + static_cast<U32>(bottomleft_color.b))) >> 1)
+            static_cast<U8>(((static_cast<U32>(topleft_color.b) + static_cast<U32>(bottomleft_color.b))) >> 1),
+            static_cast<U8>(((static_cast<U32>(topleft_color.a) + static_cast<U32>(bottomleft_color.a))) >> 1)
         );
     } else {
         topright_color    = topleft_color;
@@ -189,6 +211,12 @@ void clgl::utils::interpolate_pixel(const Vec2F &coordinates, Pixel &output, con
             bottomleft_color.b  * bottomleft_weight +
             bottomright_color.b * bottomright_weight
         ),
+        static_cast<U8>(
+            topleft_color.a     * topleft_weight    +
+            topright_color.a    * topright_weight   +
+            bottomleft_color.a  * bottomleft_weight +
+            bottomright_color.a * bottomright_weight
+        )
     };
 
     output.character = texture.get_pixel(topleft_pixel_index).character;

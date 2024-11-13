@@ -42,6 +42,9 @@ public:
     
     void                                  set_title(const std::wstring &title);
 
+    void                                  enable_color_blending(bool value = true);
+    [[nodisacrd]] bool                    is_color_blending_enabled() const;
+
     template<typename DrawerType, typename ... Params> requires std::derived_from<DrawerType, Drawer>
     DrawerInfo<DrawerType>                register_drawer(Params&... params);
 
@@ -93,12 +96,14 @@ private:
 
     winapi::Handles                      m_handles;
 
-    Vec2U                                m_size { 0u, 0u }; //this means that the screen wasnt initialised yet
+    Vec2U                                m_size { 0u, 0u }; // this means that the screen wasnt initialised yet
 
     FontData                             m_current_font_data;
 
     ScreenBuffer                         m_screen_buffer;
     ScreenWriter                         m_screen_writer;
+
+    bool                                 m_color_blending_enabled = false;
 
     CLGLResourceManager *                mp_resource_manager;
 

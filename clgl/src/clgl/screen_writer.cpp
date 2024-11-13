@@ -41,6 +41,14 @@ void clgl::ScreenWriter::clear_string_buffer() {
     string_buffer.clear();
 }
 
+void clgl::ScreenWriter::enable_color_blending(bool value) {
+    m_color_blending_enabled = value;
+}
+
+bool clgl::ScreenWriter::is_color_blending_enabled() const {
+    return m_color_blending_enabled;
+}
+
 void clgl::ScreenWriter::set_size(const Vec2U &size) {
     m_buffer_size = COORD{ static_cast<SHORT>(size.x), static_cast<SHORT>(size.y) };
     m_write_region = { 0u, 0u, static_cast<SHORT>(m_buffer_size.X - 1), static_cast<SHORT>(m_buffer_size.Y - 1) };

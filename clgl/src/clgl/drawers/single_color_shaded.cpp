@@ -16,7 +16,7 @@ void clgl::drawers::SingleColorShaded::run(const ScreenBuffer &screen_buffer, Sc
         current_index = y * screen_buffer.get_size().x;
 
         for (U32 x = 0u; x < screen_buffer.get_size().x; ++x) {
-            const Pixel &pixel = screen_buffer.get_pixel(current_index);
+            Pixel pixel = screen_buffer.get_pixel(current_index);
 
             U8 brightness = p_color_mappings->get_color_mapping(pixel.color).brightness_value;
 

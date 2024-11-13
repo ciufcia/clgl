@@ -4,16 +4,18 @@
 #include "clgl/utils/utils.hpp"
 #include "clgl/exceptions.hpp"
 
-clgl::Color::Color(U32 hex) {
+clgl::Color::Color(U32 hex, U8 a) {
     *this = utils::hex_to_rgb(hex);
+    this->a = a;
 }
 
-void clgl::Color::set_color(U8 r, U8 g, U8 b) {
-    this->r = r; this->g = g; this->b = b;
+void clgl::Color::set_color(U8 r, U8 g, U8 b, U8 a) {
+    this->r = r; this->g = g; this->b = b; this->a = a;
 }
 
-void clgl::Color::set_color(U32 hex) {
+void clgl::Color::set_color(U32 hex, U8 a) {
     *this = utils::hex_to_rgb(hex);
+    this->a;
 }
 
 clgl::U32 clgl::Color::get_hex() const {
@@ -29,11 +31,11 @@ clgl::F32 clgl::Color::calculate_luminance() const {
 }
 
 bool clgl::Color::operator==(const Color &other) const {
-    return r == other.r && g == other.g && b == other.b;
+    return r == other.r && g == other.g && b == other.b && a == other.a;
 }
 
 bool clgl::Color::operator!=(const Color &other) const {
-    return r != other.r || g != other.g || b != other.b;
+    return r != other.r || g != other.g || b != other.b || a != other.a;
 }
 
 clgl::U32 clgl::utils::rgb_to_hex(U8 r, U8 g, U8 b) {
@@ -47,6 +49,29 @@ clgl::Color clgl::utils::hex_to_rgb(U32 hex) {
         static_cast<U8>((hex & 0xFF0000) >> 16),
         static_cast<U8>((hex & 0x00FF00) >> 8),
         static_cast<U8>(hex & 0x0000FF)
+    };
+}
+
+clgl::Color clgl::utils::blend_colors(Color front, Color back) {
+    F32 alpha_front = static_cast<F32>(front.a) * _inverse_255;
+    F32 alpha_back = static_cast<F32>(back.a) * _inverse_255;
+
+    F32 premul_alpha_front_r = static_cast<F32>(front.r) * alpha_front;
+    F32 premul_alpha_front_g = static_cast<F32>(front.g) * alpha_front;
+    F32 premul_alpha_front_b = static_cast<F32>(front.b) * alpha_front;
+
+    F32 premul_alpha_back_r  = static_cast<F32>(back.r) * alpha_back;
+    F32 premul_alpha_back_g  = static_cast<F32>(back.g) * alpha_back;
+    F32 premul_alpha_back_b  = static_cast<F32>(back.b) * alpha_back;
+
+    F32 final_alpha = alpha_front + alpha_back * (1.f - alpha_front);
+    F32 inverse_final_alpha = 1.f / final_alpha;
+
+    return {
+        static_cast<U8>((premul_alpha_front_r + premul_alpha_back_r * (1.f - alpha_front)) * inverse_final_alpha),
+        static_cast<U8>((premul_alpha_front_g + premul_alpha_back_g * (1.f - alpha_front)) * inverse_final_alpha),
+        static_cast<U8>((premul_alpha_front_b + premul_alpha_back_b * (1.f - alpha_front)) * inverse_final_alpha),
+        static_cast<U8>(final_alpha * 255.f)
     };
 }
 

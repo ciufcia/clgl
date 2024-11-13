@@ -10,7 +10,14 @@ clgl::ScreenBuffer::~ScreenBuffer() {
 }
 
 void clgl::ScreenBuffer::set_pixel(U32 index, const Pixel &pixel) {
-    mp_pixels[index] = pixel;
+    if (!pixel.color.a) return;
+    if (m_color_blending_enabled) {
+        Color old_color = mp_pixels[index].color;
+        mp_pixels[index].color = utils::blend_colors(pixel.color, old_color);
+        mp_pixels[index].character = pixel.character;
+    } else {
+        mp_pixels[index] = pixel;
+    }
 }
 
 void clgl::ScreenBuffer::set_pixel_safe(U32 index, const Pixel &pixel) {
@@ -24,7 +31,7 @@ void clgl::ScreenBuffer::set_pixel(const Vec2U &coords, const Pixel &pixel) {
 }
 
 void clgl::ScreenBuffer::set_pixel_safe(const Vec2U &coords, const Pixel &pixel) {
-    if (coords.x < 0u || coords.x >= m_size.x || coords.y < 0u || coords.y >= m_size.y) return;
+    if (coords.x >= m_size.x || coords.y >= m_size.y) return;
     set_pixel(coords, pixel);
 }
 
@@ -84,4 +91,12 @@ const clgl::Pixel *clgl::ScreenBuffer::get_pixels() const {
 
 clgl::U32 clgl::ScreenBuffer::get_pixel_count() const {
     return m_pixel_count;
+}
+
+void clgl::ScreenBuffer::enable_color_blending(bool value) {
+    m_color_blending_enabled = value;
+}
+
+bool clgl::ScreenBuffer::is_color_blending_enabled() const {
+    return m_color_blending_enabled;
 }

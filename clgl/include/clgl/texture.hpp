@@ -35,6 +35,8 @@ private:
     Vec2U  m_size;
     U32    m_pixel_count;
 
+    const U8 m_channels = 4u; 
+
     Pixel *mp_pixels = nullptr;
 };
 }

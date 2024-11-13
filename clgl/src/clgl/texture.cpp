@@ -12,7 +12,7 @@ void clgl::Texture::load(const std::string &filename, Character character) {
     mp_pixels = nullptr;
 
     int width, height, channels;
-    unsigned char *pixel_data = stbi_load(filename.c_str(), &width, &height, &channels, 3);
+    unsigned char *pixel_data = stbi_load(filename.c_str(), &width, &height, &channels, m_channels);
 
     if (pixel_data == NULL) throw std::runtime_error("Couldn\'t load texture");
 
@@ -25,12 +25,18 @@ void clgl::Texture::load(const std::string &filename, Character character) {
 
     #pragma omp parallel for
     for (I32 p = 0u; p < m_pixel_count; ++p) {
-        U32 pixel_data_start = p * 3;
+        U32 pixel_data_start = p * m_channels;
 
         Pixel &pixel         = mp_pixels[p];
         pixel.color.r        = pixel_data[pixel_data_start];
         pixel.color.g        = pixel_data[pixel_data_start + 1];
         pixel.color.b        = pixel_data[pixel_data_start + 2];
+
+        if (channels == 3) {
+            pixel.color.a = 255u;
+        } else if (channels == 4) {
+            pixel.color.a = pixel_data[pixel_data_start + 3];
+        }
 
         pixel.character      = character;
     }
@@ -43,7 +49,7 @@ void clgl::Texture::load_with_custom_characters(const std::string &filename, con
     mp_pixels = nullptr;
 
     int width, height, channels;
-    unsigned char *pixel_data = stbi_load(filename.c_str(), &width, &height, &channels, 3);
+    unsigned char *pixel_data = stbi_load(filename.c_str(), &width, &height, &channels, m_channels);
 
     if (pixel_data == NULL) throw std::runtime_error("Couldn\'t load texture");
 
@@ -58,12 +64,18 @@ void clgl::Texture::load_with_custom_characters(const std::string &filename, con
 
     #pragma omp parallel for
     for (I32 p = 0u; p < m_pixel_count; ++p) {
-        U32 pixel_data_start = p * 3;
+        U32 pixel_data_start = p * m_channels;
 
         Pixel &pixel         = mp_pixels[p];
         pixel.color.r        = pixel_data[pixel_data_start];
         pixel.color.g        = pixel_data[pixel_data_start + 1];
         pixel.color.b        = pixel_data[pixel_data_start + 2];
+
+        if (channels == 3) {
+            pixel.color.a = 255u;
+        } else if (channels == 4) {
+            pixel.color.a = pixel_data[pixel_data_start + 3];
+        }
 
         pixel.character      = characters[p];
     }

@@ -5,7 +5,7 @@ void clgl::drawers::FullRGB::run(const ScreenBuffer &screen_buffer, ScreenWriter
 
     std::wstring coloring_string = L"";
 
-    const Pixel &first_pixel = screen_buffer.get_pixel(0u);
+    Pixel first_pixel = screen_buffer.get_pixel(0u);
     Color current_color = first_pixel.color;
     utils::get_ANSI_color(coloring_string, current_color);
     screen_writer.string_buffer += coloring_string;
@@ -17,7 +17,7 @@ void clgl::drawers::FullRGB::run(const ScreenBuffer &screen_buffer, ScreenWriter
         current_index = y * screen_buffer.get_size().x;
 
         for (U32 x = 0u; x < screen_buffer.get_size().x; ++x) {
-            const Pixel &pixel = screen_buffer.get_pixel(current_index);
+            Pixel pixel = screen_buffer.get_pixel(current_index);
 
             if (pixel.color != current_color) {
                 current_color = pixel.color;

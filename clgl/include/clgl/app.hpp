@@ -13,6 +13,10 @@ public:
 
                            App(const Vec2U &screen_size, const FontData &font);
 
+    Screen &               get_screen();
+    Input  &               get_input();
+    CLGLResourceManager &  get_resource_manager();
+
     void                   close();
 
     void                   display();
@@ -22,14 +26,6 @@ public:
 
     void                   set_maximum_fps(U32 fps);
 
-public:
-
-    Screen screen;
-
-    Input  input;
-
-    CLGLResourceManager resource_manager;
-
 private:
 
     void get_handles();
@@ -37,6 +33,10 @@ private:
     void pass_resource_manager();
 
 private:
+
+    Screen              m_screen;
+    Input               m_input;
+    CLGLResourceManager m_resource_manager;
 
     winapi::Handles m_handles;
 

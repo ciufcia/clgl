@@ -122,6 +122,16 @@ void clgl::Screen::set_title(const std::wstring &title) {
     )) throw exceptions::winapi::CantSet();
 }
 
+void clgl::Screen::enable_color_blending(bool value) {
+    m_screen_buffer.enable_color_blending(value);
+    m_screen_writer.enable_color_blending(value);
+    m_color_blending_enabled = value;
+}
+
+bool clgl::Screen::is_color_blending_enabled() const {
+    return m_color_blending_enabled;
+}
+
 std::shared_ptr<clgl::Drawer> clgl::Screen::get_drawer(U32 id) {
     if (id >= m_drawers.size()) throw exceptions::InvalidParameter();
 

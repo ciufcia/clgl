@@ -22,9 +22,14 @@ public:
 
     void clear_string_buffer();
 
+    void enable_color_blending(bool value = true);
+    [[nodisacrd]] bool is_color_blending_enabled() const;
+
 private:
 
     void set_size(const Vec2U &size);
+
+    bool m_color_blending_enabled = false;
 
     HANDLE     m_output_handle;
     COORD      m_buffer_size;

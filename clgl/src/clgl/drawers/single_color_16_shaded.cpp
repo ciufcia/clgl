@@ -6,7 +6,7 @@ void clgl::drawers::SingleColor16Shaded::run(const ScreenBuffer &screen_buffer, 
 
     #pragma omp parallel for
     for (I32 i = 0u; i < screen_buffer.get_pixel_count(); ++i) {
-        const Pixel &pixel = screen_buffer.get_pixel(i);
+        Pixel pixel = screen_buffer.get_pixel(i);
 
         CHAR_INFO &char_info = screen_writer.p_char_info_buffer[i];
 

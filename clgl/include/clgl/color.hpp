@@ -6,23 +6,35 @@
 
 namespace clgl
 {
+/** Basic Color class*/
 class Color
 {
 public:
 
-    U8 r = 0u;
-    U8 g = 0u;
-    U8 b = 0u;
+    U8 r = 0u; /**< Red channel of the color */
+    U8 g = 0u; /**< Green channel of the color */
+    U8 b = 0u; /**< Blue channel of the color */
+    U8 a = 0u; /**< 
+        Alpha channel of the color
+
+        the alpha value of the color may be interpreted differently based on whether the Screen is set to blend colors
+        this behaviour can be manipulated via Screen::enable_color_blending()
+        whether color blending is enabled can be checked with Screen::is_color_blending_enabled()
+        if blending is disabled, then the alpha value will be treated as a boolean:
+            (a == 0) => color is completely transparent
+            (a != 0) => color is completely opaque
+        if blending is enabled, then the alpha value will be treated as one would expect
+    */
 
 public:
 
     constexpr          Color() = default;
-    constexpr          Color(U8 r, U8 g, U8 b) : r(r), g(g), b(b) {};
-                       Color(U32 hex);
+    constexpr          Color(U8 r, U8 g, U8 b, U8 a = 255u) : r(r), g(g), b(b), a(a) {};
+                       Color(U32 hex, U8 a = 255u);
 
-    void               set_color(U8 r, U8 g, U8 b);
+    void               set_color(U8 r, U8 g, U8 b, U8 a = 255u);
 
-    void               set_color(U32 hex);
+    void               set_color(U32 hex, U8 a = 255u);
 
     [[nodiscard]] U32  get_hex() const;
 
@@ -43,6 +55,7 @@ namespace utils
 {
 [[nodiscard]] U32   rgb_to_hex(U8 r, U8 g, U8 b);
 [[nodiscard]] Color hex_to_rgb(U32 hex);
+[[nodiscard]] Color blend_colors(Color front, Color back);
 }
 
 /**
@@ -68,14 +81,14 @@ constexpr F32 _inverse_255 = 1.f / 255.f;
 struct ColorMapping
 {
     /**
-     *  Represent windows console character foreground color code
+     *  Represents windows console character foreground color code
      *  
      *  Possible values can be found in clgl::utils::terminal_16_colors::ForegroundColor
      */
     U8 color_code;
 
     /**
-     *  Represent color luminance
+     *  Represents color luminance
      * 
      *  Can store values in range [0, 15] (inclusive),
      *  where 0 is black and 15 is white
@@ -86,7 +99,7 @@ struct ColorMapping
 /**
  *  Stores color mapping data for all 24-bit colors.
  * 
- *  Once loaded this objects takes up a lot of memory, so beware
+ *  @remarks Once loaded this objects takes up a lot of memory, so beware
  */
 class ColorMappings : public CLGLResource
 {
