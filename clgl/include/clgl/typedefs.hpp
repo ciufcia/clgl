@@ -18,4 +18,8 @@ typedef float    F32;
 typedef double   F64;
 
 typedef U32      CLGLResourceID;
+
+// must be an unsigned integer
+// the first bit of the type is reserved for overdraw
+typedef U8       FlagBufferType;
 }

@@ -15,13 +15,28 @@ void clgl::Line::draw(ScreenBuffer &screen_buffer) {
     draw(screen_buffer, clipping_data.end1, clipping_data.end2);
 }
 
+void clgl::Line::draw_no_clipping(ScreenBuffer &screen_buffer) {
+    draw(screen_buffer, end1, end2);
+}
+
+void clgl::Line::draw_without_overdraw(ScreenBuffer &screen_buffer) {
+    Vec2F start = end1;
+    Vec2F end   = end2;
+
+    utils::LineClippingData clipping_data = utils::clip_line(start, end, {0.f, 0.f}, screen_buffer.get_max_float_coordinates());
+
+    if (!clipping_data.visible) return;
+
+    draw_without_overdraw(screen_buffer, clipping_data.end1, clipping_data.end2);
+}
+
+void clgl::Line::draw_no_clipping_without_overdraw(ScreenBuffer &screen_buffer) {
+    draw_without_overdraw(screen_buffer, end1, end2);
+}
+
 void clgl::Line::move(const Vec2F &offset) {
     end1 += offset;
     end2 += offset;
-}
-
-void clgl::Line::draw_no_clipping(ScreenBuffer &screen_buffer) {
-    draw(screen_buffer, end1, end2);
 }
 
 void clgl::Line::draw(ScreenBuffer &screen_buffer, Vec2F start, Vec2F end) {
@@ -77,6 +92,62 @@ void clgl::Line::draw(ScreenBuffer &screen_buffer, Vec2F start, Vec2F end) {
 
         if (steep) screen_buffer.set_pixel(Vec2U(cy, cx), pixel);
         else       screen_buffer.set_pixel(Vec2U(cx, cy), pixel);
+    }
+}
+
+void clgl::Line::draw_without_overdraw(ScreenBuffer &screen_buffer, Vec2F start, Vec2F end) {
+    bool steep  = false;
+
+    if (abs(end.x - start.x) < abs(end.y - start.y)) {
+        std::swap(start.x, start.y);
+        std::swap(end.x, end.y);
+        steep = true;
+    }
+
+    if (start.x > end.x) std::swap(start, end);
+
+    F32 dx    = end.x - start.x;
+    F32 dy    = end.y - start.y;
+    F32 slope = (dx != 0.f) ? dy / dx : screen_buffer.get_max_float_coordinate_offset();
+    F32 b     = start.y - start.x * slope;
+
+    F32 cy;
+    I32 draw_start_x;
+    I32 draw_end_x;
+
+    {
+        F32 start_pixel_left  = floor(start.x);
+        F32 start_pixel_right = start_pixel_left + 1.f;
+        F32 distance_to_edge  = start_pixel_right - start.x;
+        cy                    = (start_pixel_left + 0.5f) * slope + b;
+
+        if (distance_to_edge >= 0.5f) {
+            if (steep) screen_buffer.set_pixel_without_overdraw(Vec2U(cy, start_pixel_left), pixel);
+            else       screen_buffer.set_pixel_without_overdraw(Vec2U(start_pixel_left, cy), pixel);
+        }
+
+        draw_start_x = static_cast<I32>(start_pixel_right);
+    }
+
+    {
+        F32 end_pixel_left   = floor(end.x);
+        F32 distance_to_edge = end.x - end_pixel_left;
+
+        if (distance_to_edge >= 0.5f) {
+            F32 y = (end_pixel_left + 0.5f) * slope + b;
+
+            if (steep) screen_buffer.set_pixel_without_overdraw(Vec2U(y, end_pixel_left), pixel);
+            else       screen_buffer.set_pixel_without_overdraw(Vec2U(end_pixel_left, y), pixel);
+        }
+        
+        draw_end_x = static_cast<I32>(end_pixel_left);
+    }
+
+    for (I32 cx = draw_start_x; cx < draw_end_x; cx++) {
+        cy += slope;
+
+        if (steep) screen_buffer.set_pixel_without_overdraw(Vec2U(cy, cx), pixel);
+        else       screen_buffer.set_pixel_without_overdraw(Vec2U(cx, cy), pixel);
     }
 }
 

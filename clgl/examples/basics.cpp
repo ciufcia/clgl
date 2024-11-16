@@ -3,22 +3,18 @@
 #include <unordered_map>
 
 int main() {
-    //clgl::Color color1 {100, 255, 255, 100};
-    //clgl::Color color2 {0, 0, 0, 60};
-
-    //std::cout << int(clgl::utils::blend_colors(color1, color2).r) << ", "<< int(clgl::utils::blend_colors(color1, color2).g) << ", "<< int(clgl::utils::blend_colors(color1, color2).b) << ", " << int(clgl::utils::blend_colors(color1, color2).a) << "\n";
- 
-    clgl::App app { { 100u, 100u }, { L"Consolas", { 5u, 5u } } };
+    clgl::App app { { 100u, 64u }, { L"Consolas", { 5u, 5u } } };
     clgl::Event event;
 
     app.get_screen().enable_color_blending(true);
 
-    /*
-    clgl::Sprite point;
+    //app.get_screen().register_and_set_drawer<clgl::drawers::Colors16>();
+
+    /*clgl::Sprite point;
     auto p_texture = clgl::Texture::create("thing.png", L'\x2588');
     point.set_texture(p_texture);*/
     
-    clgl::Polygon point {5u, true, clgl::Pixel(clgl::Color(0x3307ff, 127), L'\x2588')};
+    clgl::Polygon point {5u, true, clgl::Pixel(clgl::Color(0x3307ff, 20), L'\x2588')};
 
     point.set_point(0u, {0, 0});
     point.set_point(1u, {5, 2});
@@ -31,6 +27,8 @@ int main() {
     point.set_origin(centroid);
 
     point.set_scale({2, 2});
+
+    point.move({ 40.f, 40.f });
 
     while (true) {
         while (app.get_input().pollEvent(event)) {

@@ -13,6 +13,11 @@ struct Line : public Drawable
     void draw_no_clipping(ScreenBuffer &screen_buffer) override;
     void move(const Vec2F &offset);
 
+    // not meant to be used on its own
+    void draw_without_overdraw(ScreenBuffer &screen_buffer);
+    // not meant to be used on its own
+    void draw_no_clipping_without_overdraw(ScreenBuffer &screen_buffer);
+
     Vec2F end1;
     Vec2F end2;
     Pixel pixel;
@@ -20,6 +25,7 @@ struct Line : public Drawable
 private:
 
     void draw(ScreenBuffer &screen_buffer, Vec2F start, Vec2F end);
+    void draw_without_overdraw(ScreenBuffer &screen_buffer, Vec2F start, Vec2F end);
 };
 
 namespace utils

@@ -28,6 +28,11 @@ private:
 
     void transform_points(std::vector<Vec2F> &output) const;
 
+    void draw_with_overdraw(ScreenBuffer &screen_buffer);
+    void draw_no_clipping_with_overdraw(ScreenBuffer &screen_buffer);
+    void draw_without_overdraw(ScreenBuffer &screen_buffer);
+    void draw_no_clipping_without_overdraw(ScreenBuffer &screen_buffer);
+
 public:
 
     Pixel pixel;
