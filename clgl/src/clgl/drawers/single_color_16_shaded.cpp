@@ -11,7 +11,7 @@ void clgl::drawers::SingleColor16Shaded::run(const ScreenBuffer &screen_buffer, 
         CHAR_INFO &char_info = screen_writer.p_char_info_buffer[i];
 
         U8 brightness              = p_color_mappings->get_color_mapping(pixel.color).brightness_value;
-        char_info.Char.UnicodeChar = m_shading_palette[brightness];
+        char_info.Char.UnicodeChar = m_shading_palette[brightness >> 4];
         char_info.Attributes       = console_color;
     }
 
@@ -28,6 +28,7 @@ const std::wstring &clgl::drawers::SingleColor16Shaded::get_shading_palette() co
     return m_shading_palette;
 }
 
-void clgl::drawers::SingleColor16Shaded::on_set() {
-    p_color_mappings = get_resource_manager()->access_resource<clgl::ColorMappings>();
+void clgl::drawers::SingleColor16Shaded::on_set(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) {
+    p_color_mappings = get_resource_manager()->access_resource<clgl::ColorMappings>(color_mappings_id);
+    screen_writer.set_color_palette(p_color_mappings->get_color_palette());
 }

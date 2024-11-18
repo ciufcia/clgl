@@ -42,6 +42,8 @@ public:
     
     void                                  set_title(const std::wstring &title);
 
+    void                                  set_color_palette(const Color *color_palette);
+
     void                                  enable_color_blending(bool value = true);
     [[nodisacrd]] bool                    is_color_blending_enabled() const;
 
@@ -70,10 +72,8 @@ private:
     void display();
 
     void pass_handles(const winapi::Handles &handles);
-    void load_color_mappings();
     void set_console_output_mode();
     void hide_cursor();
-    void set_color_palette();
 
     void restore_initial_settings();
 
@@ -88,9 +88,6 @@ private:
 
     void save_old_cursor_info();
     void restore_old_cursor_info();
-
-    void save_old_color_palette();
-    void restore_old_color_palette();
 
 private:
 
@@ -142,7 +139,7 @@ DrawerInfo<DrawerType> Screen::register_drawer(Params&... params) {
     const U32                   index = m_drawers.size();
 
     p_drawer->mp_resource_manager = mp_resource_manager;
-    p_drawer->on_registered();
+    p_drawer->on_registered(m_screen_buffer, m_screen_writer);
 
     m_drawers.push_back(p_drawer);
     m_drawer_indices.insert({ hash_code, index });
@@ -166,7 +163,7 @@ DrawerInfo<DrawerType> Screen::get_drawer() {
 template<typename DrawerType> requires std::derived_from<DrawerType, Drawer>
 void Screen::set_drawer() {
     if (mp_current_drawer != nullptr)
-        mp_current_drawer->on_unset();
+        mp_current_drawer->on_unset(m_screen_buffer, m_screen_writer);
 
     const std::size_t hash_code = typeid(DrawerType).hash_code();
     const auto        iter      = m_drawer_indices.find(hash_code);
@@ -176,7 +173,7 @@ void Screen::set_drawer() {
     m_current_drawer_id = iter->second;
     mp_current_drawer   = m_drawers[m_current_drawer_id];
 
-    mp_current_drawer->on_set();
+    mp_current_drawer->on_set(m_screen_buffer, m_screen_writer);
 }
 
 template<typename DrawerType, typename ... Params> requires std::derived_from<DrawerType, Drawer>

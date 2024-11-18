@@ -14,6 +14,7 @@ void clgl::drawers::Colors16::run(const ScreenBuffer &screen_buffer, ScreenWrite
     screen_writer.write_char_info_buffer();
 }
 
-void clgl::drawers::Colors16::on_set() {
-    p_color_mappings = get_resource_manager()->access_resource<clgl::ColorMappings>();
+void clgl::drawers::Colors16::on_set(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) {
+    p_color_mappings = get_resource_manager()->access_resource<clgl::ColorMappings>(color_mappings_id);
+    screen_writer.set_color_palette(p_color_mappings->get_color_palette());
 }

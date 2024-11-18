@@ -1,4 +1,5 @@
 #include "clgl/transformable.hpp"
+#include <limits>
 
 void clgl::Transformable::move(const Vec2F &offset) {
     m_position += offset;
@@ -22,8 +23,8 @@ const clgl::Vec2F &clgl::Transformable::get_position() const {
 
 void clgl::Transformable::set_scale(const Vec2F &scale) {
     m_scale = scale;
-    m_inverse_scale.x = 1.f / scale.x;
-    m_inverse_scale.y = 1.f / scale.y;
+    m_inverse_scale.x = (scale.x != 0.f) ? 1.f / scale.x: std::numeric_limits<F32>::max();
+    m_inverse_scale.y = (scale.y != 0.f) ? 1.f / scale.y: std::numeric_limits<F32>::max();
 }
 
 const clgl::Vec2F &clgl::Transformable::get_scale() const {

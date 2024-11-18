@@ -1,6 +1,7 @@
 #include "clgl/drawables/polygon.hpp"
 #include "clgl/drawables/line.hpp"
 #include "clgl/utils/utils.hpp"
+#include "clgl/exceptions.hpp"
 #include <cmath>
 #include <numbers>
 #include <stdexcept>
@@ -26,6 +27,7 @@ void clgl::Polygon::draw_no_clipping(ScreenBuffer &screen_buffer) {
 }
 
 void clgl::Polygon::set_point_count(U32 point_count) {
+    if (point_count < 3) throw exceptions::InvalidParameter();
     m_points.resize(point_count, { 0.f, 0.f });
     set_origin({ std::numeric_limits<F32>::max(), std::numeric_limits<F32>::max() });
 }

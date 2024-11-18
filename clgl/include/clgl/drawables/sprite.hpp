@@ -19,6 +19,13 @@ public:
 
 private:
 
+    void draw_transformed(ScreenBuffer &screen_buffer);
+    void draw_no_clipping_transformed(ScreenBuffer &screen_buffer);
+    void draw_nontransformed(ScreenBuffer &screen_buffer);
+    void draw_no_clipping_nontransformed(ScreenBuffer &screen_buffer);
+
+private:
+
     Vec2F m_topleft { 0.f, 0.f };
 
     std::shared_ptr<Texture> mp_texture = nullptr;

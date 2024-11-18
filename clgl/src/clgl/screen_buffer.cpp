@@ -1,6 +1,7 @@
 #include "clgl/screen_buffer.hpp"
 #include "clgl/utils/utils.hpp"
 #include <cmath>
+#include "clgl/exceptions.hpp"
 
 clgl::ScreenBuffer::ScreenBuffer(const Vec2U &size) {
     set_size(size);
@@ -95,6 +96,8 @@ const clgl::Vec2U &clgl::ScreenBuffer::get_size() const {
 }
 
 void clgl::ScreenBuffer::set_size(const Vec2U &size) {
+    if (size.x == 0u || size.y == 0u) throw exceptions::InvalidParameter();
+
     m_size = size;
 
     m_max_float_coordinates = { size.x - get_max_float_coordinate_offset(), size.y - get_max_float_coordinate_offset() };

@@ -20,7 +20,7 @@ void clgl::drawers::SingleColorShaded::run(const ScreenBuffer &screen_buffer, Sc
 
             U8 brightness = p_color_mappings->get_color_mapping(pixel.color).brightness_value;
 
-            screen_writer.string_buffer += m_shading_palette[brightness];
+            screen_writer.string_buffer += m_shading_palette[brightness >> 4];
 
             ++current_index;
         }
@@ -44,6 +44,7 @@ const std::wstring &clgl::drawers::SingleColorShaded::get_shading_palette() cons
     return m_shading_palette;
 }
 
-void clgl::drawers::SingleColorShaded::on_set() {
-    p_color_mappings = get_resource_manager()->access_resource<clgl::ColorMappings>();
+void clgl::drawers::SingleColorShaded::on_set(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) {
+    p_color_mappings = get_resource_manager()->access_resource<clgl::ColorMappings>(color_mappings_id);
+    screen_writer.set_color_palette(p_color_mappings->get_color_palette());
 }

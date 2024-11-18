@@ -26,3 +26,5 @@ option(clgl_BUILD_TOOLS ON)
 option(clgl_BUILD_EXAMPLES ON)
 
 add_subdirectory(clgl)
+
+add_subdirectory(tools)

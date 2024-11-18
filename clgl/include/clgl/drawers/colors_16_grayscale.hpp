@@ -14,17 +14,13 @@ public:
 
 protected:
 
-    virtual void on_set() override;
+    virtual void on_set(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) override;
+public:
+
+    CLGLResourceID color_mappings_id = 0u;
 
 private:
 
     const ColorMappings *p_color_mappings = nullptr;
-
-    U8 m_grayscale_colors[4] = {
-        static_cast<U8>(utils::terminal_16_colors::ForegroundColor::Black),
-        static_cast<U8>(utils::terminal_16_colors::ForegroundColor::Gray),
-        static_cast<U8>(utils::terminal_16_colors::ForegroundColor::LightGray),
-        static_cast<U8>(utils::terminal_16_colors::ForegroundColor::White)
-    };
 };
 }

@@ -110,15 +110,39 @@ public:
     /**
      *  Loads the color mapping data from the clgl_resources folder
      */
-    void                       load();
+    void                       load(const std::string &file_path);
+
+    const Color *get_color_palette() const;
 
     [[nodiscard]] ColorMapping get_color_mapping(Color color) const;
     [[nodiscard]] ColorMapping get_color_mapping(U32 hex) const;
 
 private:
 
-    const std::string m_data_path = constants::resources_folder_path + "color_mappings.clcm";
+    Color             m_color_palette[16] { { 0u, 0u, 0u } };
 
     U8               *mp_data     = new U8[constants::color_space_size_24bit];
 };
+
+namespace constants
+{
+constexpr Color grayscale_color_palette[16] {
+    { 0u, 0u, 0u },
+    { 17u, 17u, 17u },
+    { 34u, 34u, 34u },
+    { 51u, 51u, 51u },
+    { 68u, 68u, 68u },
+    { 85u, 85u, 85u },
+    { 102u, 102u, 102u },
+    { 119u, 119u, 119u },
+    { 136u, 136u, 136u },
+    { 153u, 153u, 153u },
+    { 170u, 170u, 170u },
+    { 187u, 187u, 187u },
+    { 204u, 204u, 204u },
+    { 221u, 221u, 221u },
+    { 238u, 238u, 238u },
+    { 255u, 255u, 255u },
+};
+}
 }

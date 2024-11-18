@@ -25,9 +25,9 @@ public:
 
 protected:
 
-    virtual void on_registered() {};
-    virtual void on_set() {};
-    virtual void on_unset() {};
+    virtual void on_registered(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) {};
+    virtual void on_set(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) {};
+    virtual void on_unset(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) {};
 
     [[nodiscard]] virtual CLGLResourceManager * get_resource_manager() const final;
 

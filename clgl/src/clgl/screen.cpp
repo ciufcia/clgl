@@ -24,6 +24,8 @@ const clgl::Vec2U &clgl::Screen::get_size() const {
 }
 
 void clgl::Screen::set_size(const Vec2U &size) {
+    if (size.x == 0u || size.y == 0u) throw exceptions::InvalidParameter();
+
     save_old_size();
 
     CONSOLE_SCREEN_BUFFER_INFO screen_buffer_info;
@@ -43,12 +45,12 @@ void clgl::Screen::set_size(const Vec2U &size) {
 
         if (screen_buffer_info.dwSize.X > largest_console_window_size.X) {
             new_font.size.x = (old_font.size.x * static_cast<U32>(largest_console_window_size.X)) / static_cast<U32>(screen_buffer_info.dwSize.X);
-            if (new_font.size.x == 0u) throw exceptions::InvalidParameter();
+            if (new_font.size.x == 0u) throw exceptions::InvalidParameter(); // not sure if I can correct anything if this is the case, if this happens the user must manually make the console buffer smaller, before running
         }
 
         if (screen_buffer_info.dwSize.Y > largest_console_window_size.Y) {
             new_font.size.y = (old_font.size.y * static_cast<U32>(largest_console_window_size.Y)) / static_cast<U32>(screen_buffer_info.dwSize.Y);
-            if (new_font.size.y == 0u) throw exceptions::InvalidParameter();
+            if (new_font.size.y == 0u) throw exceptions::InvalidParameter(); // not sure if I can correct anything if this is the case, if this happens the user must manually make the console buffer smaller, before running
         }
 
         set_font(new_font);
@@ -122,6 +124,10 @@ void clgl::Screen::set_title(const std::wstring &title) {
     )) throw exceptions::winapi::CantSet();
 }
 
+void clgl::Screen::set_color_palette(const Color *color_palette) {
+    m_screen_writer.set_color_palette(color_palette);
+}
+
 void clgl::Screen::enable_color_blending(bool value) {
     m_screen_buffer.enable_color_blending(value);
     m_screen_writer.enable_color_blending(value);
@@ -151,10 +157,8 @@ clgl::U32 clgl::Screen::get_current_drawer_id() const {
 
 void clgl::Screen::init(const winapi::Handles &handles, const Vec2U &size, const FontData &font_data) {
     pass_handles(handles);
-    load_color_mappings();
     set_console_output_mode();
     hide_cursor();
-    set_color_palette();
 
     set_font(font_data);
     set_size(size);
@@ -170,11 +174,6 @@ void clgl::Screen::pass_handles(const winapi::Handles &handles) {
     m_handles = handles;
 
     m_screen_writer.m_output_handle = handles.output_handle;
-}
-
-void clgl::Screen::load_color_mappings() {
-    ColorMappings *color_mappings = mp_resource_manager->load_resource<ColorMappings>();
-    color_mappings->load();
 }
 
 void clgl::Screen::set_console_output_mode() {
@@ -208,40 +207,13 @@ void clgl::Screen::hide_cursor() {
     )) throw exceptions::winapi::CantSet();
 }
 
-void clgl::Screen::set_color_palette() {
-    save_old_color_palette();
-
-    CONSOLE_SCREEN_BUFFER_INFOEX console_buffer_info;
-    console_buffer_info.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
-
-    if (!GetConsoleScreenBufferInfoEx(
-        m_handles.output_handle,
-        &console_buffer_info
-    )) throw exceptions::winapi::CantFetch();
-
-    for (U32 i = 0u; i < 16; ++i) {
-        Color color = clgl::utils::terminal_16colors_rgb::colors[i];
-        U32 bgr_hex = 0u;
-        bgr_hex |= color.r;
-        bgr_hex |= (color.g << 8);
-        bgr_hex |= (color.b << 16);
-
-        console_buffer_info.ColorTable[i] = static_cast<DWORD>(bgr_hex);
-    }
-
-    if (!SetConsoleScreenBufferInfoEx(
-        m_handles.output_handle,
-        &console_buffer_info
-    )) throw exceptions::winapi::CantSet();
-}
-
 void clgl::Screen::restore_initial_settings() {
     std::cout << "\033[2J";
 
     restore_old_font();
     restore_old_size();
     restore_old_cursor_info();
-    restore_old_color_palette();
+    m_screen_writer.restore_old_color_palette();
 
     restore_old_console_output_mode();
 }
@@ -275,6 +247,8 @@ void clgl::Screen::save_old_font() {
 }
 
 void clgl::Screen::restore_old_font() {
+    if (!m_first_font_set) return;
+
     if (!SetCurrentConsoleFontEx(
         m_handles.output_handle,
         FALSE,
@@ -299,6 +273,8 @@ void clgl::Screen::save_old_size() {
 }
 
 void clgl::Screen::restore_old_size() {
+    if (!m_first_font_set) return;
+
     try { set_size(m_old_size); } catch (exceptions::InvalidParameter &exception) {}
 
     m_first_size_set = false;
@@ -315,34 +291,5 @@ void clgl::Screen::restore_old_cursor_info() {
     if (!SetConsoleCursorInfo(
         m_handles.output_handle,
         &m_old_cursor_info
-    )) throw exceptions::winapi::CantSet();
-}
-
-void clgl::Screen::save_old_color_palette() {
-    CONSOLE_SCREEN_BUFFER_INFOEX console_buffer_info;
-    console_buffer_info.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
-
-    if (!GetConsoleScreenBufferInfoEx(
-        m_handles.output_handle,
-        &console_buffer_info
-    )) throw exceptions::winapi::CantFetch();
-
-    std::copy(console_buffer_info.ColorTable, console_buffer_info.ColorTable + 16, m_old_color_palette);
-}
-
-void clgl::Screen::restore_old_color_palette() {
-    CONSOLE_SCREEN_BUFFER_INFOEX console_buffer_info;
-    console_buffer_info.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
-
-    if (!GetConsoleScreenBufferInfoEx(
-        m_handles.output_handle,
-        &console_buffer_info
-    )) throw exceptions::winapi::CantFetch();
-
-    std::copy(m_old_color_palette, m_old_color_palette + 16, console_buffer_info.ColorTable);
-
-    if (!SetConsoleScreenBufferInfoEx(
-        m_handles.output_handle,
-        &console_buffer_info
     )) throw exceptions::winapi::CantSet();
 }

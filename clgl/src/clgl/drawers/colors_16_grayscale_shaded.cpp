@@ -11,18 +11,19 @@ void clgl::drawers::Colors16GrayscaleShaded::run(const ScreenBuffer &screen_buff
 
         U8 brightness = p_color_mappings->get_color_mapping(pixel.color).brightness_value;
 
-        U8 color_index     = (brightness  & 0b1100) >> 2;
-        U8 character_index = brightness & 0b0011;
+        U8 color = brightness >> 4;
+        U8 character = color >> 2;
 
-        char_info.Char.UnicodeChar = m_shading_palette[character_index];
-        char_info.Attributes       = m_grayscale_colors[color_index];
+        char_info.Char.UnicodeChar = m_shading_palette[character];
+        char_info.Attributes       = color;
     }
 
     screen_writer.write_char_info_buffer();
 }
 
-void clgl::drawers::Colors16GrayscaleShaded::on_set() {
-    p_color_mappings = get_resource_manager()->access_resource<clgl::ColorMappings>();
+void clgl::drawers::Colors16GrayscaleShaded::on_set(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) {
+    p_color_mappings = get_resource_manager()->access_resource<clgl::ColorMappings>(color_mappings_id);
+    screen_writer.set_color_palette(constants::grayscale_color_palette);
 }
 
 void clgl::drawers::Colors16GrayscaleShaded::set_shading_palette(const std::wstring &shading_palette) {

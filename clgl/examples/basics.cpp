@@ -3,18 +3,25 @@
 #include <unordered_map>
 
 int main() {
-    clgl::App app { { 100u, 64u }, { L"Consolas", { 5u, 5u } } };
+    clgl::App app { { 320u, 200u }, { L"Consolas", { 4u, 4u } } };
     clgl::Event event;
 
-    app.get_screen().enable_color_blending(true);
+    app.get_screen().enable_color_blending(false);
 
-    //app.get_screen().register_and_set_drawer<clgl::drawers::Colors16>();
+    clgl::ColorMappings *color_mappings = app.get_resource_manager().load_resource<clgl::ColorMappings>();
+    color_mappings->load("clgl_resources/color_mappings.clcm");
 
-    /*clgl::Sprite point;
-    auto p_texture = clgl::Texture::create("thing.png", L'\x2588');
-    point.set_texture(p_texture);*/
-    
-    clgl::Polygon point {5u, true, clgl::Pixel(clgl::Color(0x3307ff, 20), L'\x2588')};
+    app.get_screen().register_and_set_drawer<clgl::drawers::Colors16Grayscale>();
+
+    auto texture = clgl::Texture::create("thing.jpg", L'\x2588');
+
+    clgl::Sprite point;
+    point.set_texture(texture);
+
+    point.set_scale({ 0.1f, 0.1f });
+
+    /*
+    clgl::Polygon point {5u, true, clgl::Pixel(clgl::Color(245,245,245, 255), L'\x2588')};
 
     point.set_point(0u, {0, 0});
     point.set_point(1u, {5, 2});
@@ -26,9 +33,9 @@ int main() {
 
     point.set_origin(centroid);
 
-    point.set_scale({2, 2});
+    point.set_scale({1, 1});
 
-    point.move({ 40.f, 40.f });
+    point.move({ 40.f, 40.f });*/
 
     while (true) {
         while (app.get_input().pollEvent(event)) {
@@ -48,16 +55,16 @@ int main() {
         app.get_screen().set_title(std::to_wstring(1.f / f_delta_time.count()));
 
         if (app.get_input().is_key_pressed(clgl::KeyCode::A)) {
-            point.move({-10.f * f_delta_time.count(), 0.f});
+            point.move({-100.f * f_delta_time.count(), 0.f});
         }
         if (app.get_input().is_key_pressed(clgl::KeyCode::D)) {
-            point.move({10.f * f_delta_time.count(), 0.f});
+            point.move({100.f * f_delta_time.count(), 0.f});
         }
         if (app.get_input().is_key_pressed(clgl::KeyCode::W)) {
-            point.move({0.f, -10.f * f_delta_time.count()});
+            point.move({0.f, -100.f * f_delta_time.count()});
         }
         if (app.get_input().is_key_pressed(clgl::KeyCode::S)) {
-            point.move({0.f, 10.f * f_delta_time.count()});
+            point.move({0.f, 100.f * f_delta_time.count()});
         }
         if (app.get_input().is_key_pressed(clgl::KeyCode::Q)) {
             point.rotate(-200.f * f_delta_time.count());
@@ -68,10 +75,9 @@ int main() {
 
         app.get_screen().fill({ { 0u, 0u, 0u }, L'#' });
 
-        app.get_screen().draw(point);
+        app.get_screen().draw_no_clipping(point);
 
         app.display();
     }
-
     return 0;
 }

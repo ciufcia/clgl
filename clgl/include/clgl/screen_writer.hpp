@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utils/winapi_include.hpp"
+#include "clgl/color.hpp"
 #include "vec.hpp"
 #include <string>
 
@@ -23,7 +24,11 @@ public:
     void clear_string_buffer();
 
     void enable_color_blending(bool value = true);
-    [[nodisacrd]] bool is_color_blending_enabled() const;
+    [[nodiscard]] bool is_color_blending_enabled() const;
+
+    void set_color_palette(const Color *color_palette);
+    void save_old_color_palette();
+    void restore_old_color_palette();
 
 private:
 
@@ -34,6 +39,9 @@ private:
     HANDLE     m_output_handle;
     COORD      m_buffer_size;
     SMALL_RECT m_write_region;
+
+    COLORREF   m_old_color_palette[16];
+    bool       m_first_palette_set = false;
 
 friend class Screen;
 };

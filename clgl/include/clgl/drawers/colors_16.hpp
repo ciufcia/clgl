@@ -14,8 +14,11 @@ public:
 
 protected:
 
-    virtual void on_set() override;
+    virtual void on_set(const ScreenBuffer &screen_buffer, ScreenWriter &screen_writer) override;
+public:
 
+    CLGLResourceID color_mappings_id = 0u;
+    
 private:
 
     const ColorMappings *p_color_mappings = nullptr;
