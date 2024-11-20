@@ -91,4 +91,4 @@ Example usage of the library can be found ***[here](clgl/examples)***. Unfortuna
 
 ## 🤖 Future
 
-The project is still very early development, so a lot is set to change. I think the main priorities now will be adding more drawables and documenting the code. Of course any contributions/suggestions are welcome 🥰
+The project is still very in early development, so a lot is set to change. I think the main priorities now will be adding more drawables and documenting the code. Of course any contributions/suggestions are welcome 🥰
