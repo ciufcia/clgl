@@ -46,7 +46,7 @@ I made this project to learn a bit about graphics. *Also just felt like making i
 
 ## 💪 Performance
 
-The library takes some considerations to try to be as efficient as possible. However the main performance bottleneck in most cases will be the Command Prompt itself, instead of the library. Unfortunately I can't really do anything about it. From my observations, The less the colors, that have to be drawn to the console, differ, the faster the console will refresh, so keep that in mind
+The library takes some considerations to try to be as efficient as possible. However the main performance bottleneck in most cases will be the Command Prompt itself. Unfortunately I can't really do anything about it. From my observations, The less the colors, that have to be drawn to the console, differ, the faster the console will refresh, so keep that in mind
 
 ## ❓ How to use?
 
