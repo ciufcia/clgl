@@ -1,6 +1,6 @@
 #include "clgl/drawables/point.hpp"
 
-clgl::Point::Point(const Pixel &pixel, const Vec2F &position) {
+clgl::Point::Point(const Vec2F &position, const Pixel &pixel) {
     this->pixel = pixel; this->position = position;
 }
 

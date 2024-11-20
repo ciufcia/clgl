@@ -70,6 +70,9 @@ void clgl::ScreenWriter::set_color_palette(const Color *color_palette) {
 
         console_buffer_info.ColorTable[i] = static_cast<DWORD>(bgr_hex);
     }
+    
+    if (console_buffer_info.srWindow.Right != m_buffer_size.X - 1) console_buffer_info.srWindow.Right = m_buffer_size.X - 1;
+    if (console_buffer_info.srWindow.Bottom != m_buffer_size.Y - 1) console_buffer_info.srWindow.Bottom = m_buffer_size.Y - 1;
 
     if (!SetConsoleScreenBufferInfoEx(
         m_output_handle,

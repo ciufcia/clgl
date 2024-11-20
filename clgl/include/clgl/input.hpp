@@ -34,7 +34,7 @@ class Input
 {
 public:
 
-    [[nodiscard]] bool pollEvent(Event &event);
+    [[nodiscard]] bool poll_event(Event &event);
     [[nodiscard]] bool is_key_pressed(KeyCode keycode) const;
 
 private:

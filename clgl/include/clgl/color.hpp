@@ -107,9 +107,6 @@ public:
 
                                ~ColorMappings();
 
-    /**
-     *  Loads the color mapping data from the clgl_resources folder
-     */
     void                       load(const std::string &file_path);
 
     const Color *get_color_palette() const;
@@ -121,7 +118,7 @@ private:
 
     Color             m_color_palette[16] { { 0u, 0u, 0u } };
 
-    U8               *mp_data     = new U8[constants::color_space_size_24bit];
+    U8               *mp_data     = nullptr;
 };
 
 namespace constants

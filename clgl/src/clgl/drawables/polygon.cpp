@@ -19,11 +19,10 @@ void clgl::Polygon::draw(ScreenBuffer &screen_buffer) {
 }
 
 void clgl::Polygon::draw_no_clipping(ScreenBuffer &screen_buffer) {
-    if (!screen_buffer.is_color_blending_enabled() || pixel.color.a == 255u) {
+    if (!screen_buffer.is_color_blending_enabled() || pixel.color.a == 255u)
         draw_no_clipping_with_overdraw(screen_buffer);
-    } else {
+    else
         draw_no_clipping_without_overdraw(screen_buffer);
-    }
 }
 
 void clgl::Polygon::set_point_count(U32 point_count) {

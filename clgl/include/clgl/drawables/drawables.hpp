@@ -5,5 +5,4 @@
 #include "polygon.hpp"
 #include "circle.hpp"
 #include "intline.hpp"
-#include "intcircle.hpp"
 #include "sprite.hpp"

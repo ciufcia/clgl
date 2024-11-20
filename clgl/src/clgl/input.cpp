@@ -42,7 +42,7 @@ bool clgl::utils::InputQueue::grab(INPUT_RECORD &input_record) {
     return true;
 }
 
-bool clgl::Input::pollEvent(Event &event) {
+bool clgl::Input::poll_event(Event &event) {
     INPUT_RECORD input_record;
 
     while (true) {

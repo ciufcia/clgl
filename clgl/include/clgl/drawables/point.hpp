@@ -8,7 +8,7 @@ namespace clgl
 struct Point : public Drawable
 {
     Point() = default;
-    Point(const Pixel &pixel, const Vec2F &position);
+    Point(const Vec2F &position, const Pixel &pixel);
 
     Pixel pixel;
     Vec2F position;

@@ -145,10 +145,14 @@ std::shared_ptr<clgl::Drawer> clgl::Screen::get_drawer(U32 id) {
 }
 
 void clgl::Screen::set_drawer(U32 id) {
+    if (mp_current_drawer != nullptr) mp_current_drawer->on_unset(m_screen_buffer, m_screen_writer);
+
     if (id >= m_drawers.size()) throw exceptions::InvalidParameter();
 
     m_current_drawer_id = id;
     mp_current_drawer   = m_drawers[id];
+
+    mp_current_drawer->on_set(m_screen_buffer, m_screen_writer);
 }
 
 clgl::U32 clgl::Screen::get_current_drawer_id() const {

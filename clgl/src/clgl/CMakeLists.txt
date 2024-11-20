@@ -20,7 +20,6 @@ add_library(
     drawables/polygon.cpp
     drawables/circle.cpp
     drawables/intline.cpp
-    drawables/intcircle.cpp
     drawables/sprite.cpp
     drawers/full_rgb.cpp
     drawers/colors_16.cpp

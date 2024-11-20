@@ -22,10 +22,20 @@ public:
 
 private:
 
-    void draw_in_all_octants(ScreenBuffer &screen_buffer, const Vec2F &point);
-    void draw_in_all_octants_filled(ScreenBuffer &screen_buffer, const Vec2F &point);
-    void draw_in_all_octants_no_clipping(ScreenBuffer &screen_buffer, const Vec2F &point);
-    void draw_in_all_octants_filled_no_clipping(ScreenBuffer &screen_buffer, const Vec2F &point);
+    void draw_with_overdraw(ScreenBuffer &screen_buffer);
+    void draw_no_clipping_with_overdraw(ScreenBuffer &screen_buffer);
+    void draw_without_overdraw(ScreenBuffer &screen_buffer);
+    void draw_no_clipping_without_overdraw(ScreenBuffer &screen_buffer);
+
+    void draw_in_all_octants_with_overdraw(ScreenBuffer &screen_buffer, const Vec2F &point);
+    void draw_in_all_octants_filled_with_overdraw(ScreenBuffer &screen_buffer, const Vec2F &point);
+    void draw_in_all_octants_no_clipping_with_overdraw(ScreenBuffer &screen_buffer, const Vec2F &point);
+    void draw_in_all_octants_filled_no_clipping_with_overdraw(ScreenBuffer &screen_buffer, const Vec2F &point);
+
+    void draw_in_all_octants_without_overdraw(ScreenBuffer &screen_buffer, const Vec2F &point);
+    void draw_in_all_octants_filled_without_overdraw(ScreenBuffer &screen_buffer, const Vec2F &point);
+    void draw_in_all_octants_no_clipping_without_overdraw(ScreenBuffer &screen_buffer, const Vec2F &point);
+    void draw_in_all_octants_filled_no_clipping_without_overdraw(ScreenBuffer &screen_buffer, const Vec2F &point);
 };
 
 namespace utils
