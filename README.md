@@ -1,18 +1,5 @@
 # Command Line Graphics Library
 
-## 📃 Table of contents
-
-- ***[What is this?](##❓-What-is-this?)***
-- ***[Why?](##❓-Why?)***
-- ***[Features](##🤩-Features)***
-- ***[Performance](##💪-Performance)***
-- ***[How to use?](##❓-How-to-use?)***
-- ***[Showcase](##🌟Showcase)***
-    - *[Drawables](###✏️-Drawables)*
-    - *[Alpha compositing and color blending](###🅰️-Alpha-compositing-and-color-blending)*
-    - *[Drawers](###🖍️-Drawers)*
-- ***[Future](##🤖-Future)***
-
 ## ❓ What is this?
 
 CLGL is a 2D graphics library that runs entirely in Windows' Command Prompt. It's main goal is to abstract all the nitty gritty WinAPI details and provide a nice and friendly developer experience.
