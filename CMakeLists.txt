@@ -22,7 +22,7 @@ set(WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 option(BUILD_SHARED_LIBS OFF)
 
-option(clgl_BUILD_TOOLS ON)
+option(clgl_BUILD_COLOR_MAPPINGS_CREATOR ON)
 option(clgl_BUILD_EXAMPLES ON)
 
 add_subdirectory(clgl)
