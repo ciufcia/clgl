@@ -65,6 +65,9 @@ clgl::Color clgl::utils::blend_colors(Color front, Color back) {
     F32 premul_alpha_back_b  = static_cast<F32>(back.b) * alpha_back;
 
     F32 final_alpha = alpha_front + alpha_back * (1.f - alpha_front);
+
+    if (final_alpha == 0.f) return front;
+
     F32 inverse_final_alpha = 1.f / final_alpha;
 
     return {

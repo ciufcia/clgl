@@ -47,6 +47,9 @@ public:
     void                                  enable_color_blending(bool value = true);
     [[nodisacrd]] bool                    is_color_blending_enabled() const;
 
+    const interpolators::PointerToInterpolator get_current_interpolator();
+    void                                       set_interpolator(interpolators::PointerToInterpolator interpolator);
+
     template<typename DrawerType, typename ... Params> requires std::derived_from<DrawerType, Drawer>
     DrawerInfo<DrawerType>                register_drawer(Params&... params);
 

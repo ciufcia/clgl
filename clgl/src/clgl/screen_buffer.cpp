@@ -197,3 +197,11 @@ void clgl::ScreenBuffer::clear_changed_flags(FlagBufferType flags) {
        if (new_flags == 0u) m_flag_changes.erase(m_flag_changes.begin() + i);
     }
 }
+
+const clgl::interpolators::PointerToInterpolator clgl::ScreenBuffer::get_current_interpolator() {
+    return mp_interpolator;
+}
+
+void clgl::ScreenBuffer::set_interpolator(interpolators::PointerToInterpolator interpolator) {
+    mp_interpolator = interpolator;
+}

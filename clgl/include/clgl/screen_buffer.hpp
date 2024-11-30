@@ -2,6 +2,7 @@
 
 #include "pixel.hpp"
 #include "vec.hpp"
+#include "texture.hpp"
 #include <vector>
 #include <utility>
 
@@ -58,6 +59,9 @@ public:
     void                         clear_flags(FlagBufferType flags = std::numeric_limits<FlagBufferType>::max());
     void                         clear_changed_flags(FlagBufferType flags = std::numeric_limits<FlagBufferType>::max());
 
+    const interpolators::PointerToInterpolator get_current_interpolator();
+    void                                       set_interpolator(interpolators::PointerToInterpolator interpolator);
+
 private:
 
     Vec2U                                       m_size                        { 0u, 0u };
@@ -75,5 +79,7 @@ private:
 
     FlagBufferType *                            mp_flag_buffer                = nullptr;
     std::vector<U32>                            m_flag_changes;
+
+    interpolators::PointerToInterpolator        mp_interpolator = interpolators::nearest_neighbor;
 };
 }

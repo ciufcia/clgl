@@ -30,10 +30,4 @@ private:
 
     std::shared_ptr<Texture> mp_texture = nullptr;
 };
-
-namespace utils
-{
-    // this function assumes that the coordinates are contained inside the texture
-    void interpolate_pixel(const Vec2F &coordinates, Pixel &output, const Texture &texture);
-}
 }

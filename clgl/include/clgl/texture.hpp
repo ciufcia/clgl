@@ -39,4 +39,21 @@ private:
 
     Pixel *mp_pixels = nullptr;
 };
+
+namespace interpolators
+{
+    typedef void (*PointerToInterpolator)(const Vec2F &coordinates, const Texture &texture, Pixel &output);
+
+    void nearest_neighbor(const Vec2F &coordinates, const Texture &texture, Pixel &output);
+
+    struct BilinearPixelData
+    {
+        Color color;
+        F32   weight = 0.f;
+        F32   f_alpha = 0.f;
+        Vec2F position;
+    };
+
+    void bilinear(const Vec2F &coordinates, const Texture &texture, Pixel &output);
+}
 }

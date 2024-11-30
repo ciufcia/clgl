@@ -138,6 +138,14 @@ bool clgl::Screen::is_color_blending_enabled() const {
     return m_color_blending_enabled;
 }
 
+const clgl::interpolators::PointerToInterpolator clgl::Screen::get_current_interpolator() {
+    return m_screen_buffer.get_current_interpolator();
+}
+
+void clgl::Screen::set_interpolator(interpolators::PointerToInterpolator interpolator) {
+    m_screen_buffer.set_interpolator(interpolator);
+}
+
 std::shared_ptr<clgl::Drawer> clgl::Screen::get_drawer(U32 id) {
     if (id >= m_drawers.size()) throw exceptions::InvalidParameter();
 
