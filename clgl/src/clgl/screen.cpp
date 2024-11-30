@@ -37,31 +37,44 @@ void clgl::Screen::set_size(const Vec2U &size) {
     COORD largest_console_window_size = GetLargestConsoleWindowSize(m_handles.output_handle);
     if (largest_console_window_size.X + largest_console_window_size.Y == 0) throw exceptions::winapi::CantFetch();
 
+    const SMALL_RECT max_window_rect { 0u, 0u, largest_console_window_size.X - 1, largest_console_window_size.Y - 1 };
+    const COORD min_window_size { static_cast<SHORT>(GetSystemMetrics(SM_CXMIN)), static_cast<SHORT>(GetSystemMetrics(SM_CYMIN)) };
+
     // The size of the console buffer can be bigger than the maximum allowed size of the console buffer somehow???
     // This fixes it
     if (screen_buffer_info.dwSize.X > largest_console_window_size.X || screen_buffer_info.dwSize.Y > largest_console_window_size.Y) {
-        FontData old_font = m_current_font_data;
-        FontData new_font { old_font.face_name, old_font.size };
-
-        if (screen_buffer_info.dwSize.X > largest_console_window_size.X) {
-            new_font.size.x = (old_font.size.x * static_cast<U32>(largest_console_window_size.X)) / static_cast<U32>(screen_buffer_info.dwSize.X);
-            if (new_font.size.x == 0u) throw exceptions::InvalidParameter(); // not sure if I can correct anything if this is the case, if this happens the user must manually make the console buffer smaller, before running
+        SMALL_RECT valid_max_rect = max_window_rect;
+        if (screen_buffer_info.dwSize.X < largest_console_window_size.X) {
+            valid_max_rect.Right = screen_buffer_info.dwSize.X - 1;
+        }
+        if (screen_buffer_info.dwSize.Y < largest_console_window_size.Y) {
+            valid_max_rect.Bottom = screen_buffer_info.dwSize.Y - 1;
         }
 
-        if (screen_buffer_info.dwSize.Y > largest_console_window_size.Y) {
-            new_font.size.y = (old_font.size.y * static_cast<U32>(largest_console_window_size.Y)) / static_cast<U32>(screen_buffer_info.dwSize.Y);
-            if (new_font.size.y == 0u) throw exceptions::InvalidParameter(); // not sure if I can correct anything if this is the case, if this happens the user must manually make the console buffer smaller, before running
-        }
+        if ((valid_max_rect.Right + 1) * static_cast<SHORT>(m_current_font_data.size.x) < min_window_size.X ||
+            (valid_max_rect.Bottom + 1) * static_cast<SHORT>(m_current_font_data.size.y) < min_window_size.Y) throw exceptions::InvalidParameter();
 
-        set_font(new_font);
-        set_size(Vec2U(largest_console_window_size.X, largest_console_window_size.Y));
-        set_font(old_font);
+        if (!SetConsoleWindowInfo(
+            m_handles.output_handle,
+            TRUE,
+            &valid_max_rect
+        )) throw exceptions::winapi::CantSet();
+
+        if (!SetConsoleScreenBufferSize(
+            m_handles.output_handle,
+            largest_console_window_size
+        )) throw exceptions::winapi::CantSet();
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const SMALL_RECT max_window_rect { 0u, 0u, largest_console_window_size.X - 1, largest_console_window_size.Y - 1 };
-
     if (static_cast<SHORT>(size.x) > largest_console_window_size.X || static_cast<SHORT>(size.y) > largest_console_window_size.Y) throw exceptions::InvalidParameter();
+
+    const COORD new_window_size { static_cast<SHORT>(size.x), static_cast<SHORT>(size.y) };
+
+    if (new_window_size.X * static_cast<SHORT>(m_current_font_data.size.x) < min_window_size.X ||
+        new_window_size.Y * static_cast<SHORT>(m_current_font_data.size.y) < min_window_size.Y) throw exceptions::InvalidParameter();
+
+    const SMALL_RECT new_window_rect { 0u, 0u, new_window_size.X - 1, new_window_size.Y - 1 };
 
     if (!SetConsoleScreenBufferSize(
         m_handles.output_handle,
@@ -72,14 +85,6 @@ void clgl::Screen::set_size(const Vec2U &size) {
         m_handles.output_handle,
         &screen_buffer_info
     )) throw exceptions::winapi::CantFetch();
-
-    const COORD new_window_size { static_cast<SHORT>(size.x), static_cast<SHORT>(size.y) };
-    const COORD min_window_size { static_cast<SHORT>(GetSystemMetrics(SM_CXMIN)), static_cast<SHORT>(GetSystemMetrics(SM_CYMIN)) };
-
-    if (new_window_size.X * static_cast<SHORT>(m_current_font_data.size.x) < min_window_size.X ||
-        new_window_size.Y * static_cast<SHORT>(m_current_font_data.size.y) < min_window_size.Y) throw exceptions::InvalidParameter();
-
-    const SMALL_RECT new_window_rect { 0u, 0u, new_window_size.X - 1, new_window_size.Y - 1 };
 
     if (!SetConsoleWindowInfo(
         m_handles.output_handle,

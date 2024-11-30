@@ -4,7 +4,6 @@ int main() {
     // create an app in a window of width and height of 50 characters
     // set the console font to Consolas and set the character size to 10 by 10 pixels
     clgl::App app { clgl::Vec2U(50u, 50u), { L"Consolas", clgl::Vec2U(10u, 10u) } };
-
     // set maximum fps
     app.set_maximum_fps(60u);
 
