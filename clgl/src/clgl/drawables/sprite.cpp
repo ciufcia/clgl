@@ -93,10 +93,10 @@ void clgl::Sprite::draw_nontransformed(ScreenBuffer &screen_buffer) {
 
     Vec2I texture_offset = topleft * -1.f;
 
-    topleft.x = std::clamp(topleft.x, 0, static_cast<I32>(screen_buffer.get_max_int_coordinates().x));
-    topleft.y = std::clamp(topleft.y, 0, static_cast<I32>(screen_buffer.get_max_int_coordinates().y));
-    bottomright.x = std::clamp(bottomright.x, 0, static_cast<I32>(screen_buffer.get_max_int_coordinates().x));
-    bottomright.y = std::clamp(bottomright.y, 0, static_cast<I32>(screen_buffer.get_max_int_coordinates().y));
+    topleft.x = std::clamp(topleft.x, 0, static_cast<I32>(screen_buffer.get_size().x));
+    topleft.y = std::clamp(topleft.y, 0, static_cast<I32>(screen_buffer.get_size().y));
+    bottomright.x = std::clamp(bottomright.x, 0, static_cast<I32>(screen_buffer.get_size().x));
+    bottomright.y = std::clamp(bottomright.y, 0, static_cast<I32>(screen_buffer.get_size().y));
 
     #pragma omp parallel for
     for (I32 y = topleft.y; y < bottomright.y; ++y) {
