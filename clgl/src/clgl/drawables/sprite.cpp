@@ -55,7 +55,7 @@ void clgl::Sprite::draw_transformed(ScreenBuffer &screen_buffer) {
 
     Vec2I size = bottomright - topleft;
 
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for (I32 y = 0; y <= size.y; ++y) {
         for (I32 x = 0; x <= size.x; ++x) {
             Vec2F destination_coordinates = Vec2F(x, y) + topleft;
